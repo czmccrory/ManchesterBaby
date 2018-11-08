@@ -21,6 +21,10 @@ Line::Line() {
 	line =  new vector<bool>(32, 0);
 }
 
+Line::~Line() {
+	delete line;
+}
+
 vector<bool> * Line::getInstruction() {
 	return new vector<bool>(line->begin() + 13, line->begin() + 16);
 }

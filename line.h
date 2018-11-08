@@ -12,4 +12,5 @@ public:
 	vector<bool> * getAddress(); //get the address bools from approptiate places in the array //maybe not int
 
 	Line();
+	~Line();
 };

@@ -22,6 +22,10 @@ class ManchesterBaby
     // stores values during calculations??
     Line accumulator;
 
+    int decCounter = 0;
+
+    Line binCounter;
+
   public:
     // runs the program
     void runBaby();
@@ -60,10 +64,22 @@ class ManchesterBaby
     // prints the store
     void output();
 
-}
+};
 
 /* Initialises the passed in Line to all 0's */
 void initialiseLine(Line* line)
 {
   (*line).fill(0);
 }
+
+
+//Fetches next instruction
+void fetch()
+{
+	//CI (Control Instruction) points to memory address of the current line at the store
+	controlInstruction = binCounter;
+
+	//PI (Present Instruction) is set to the current line of the store
+	presentInstruction = Store.at(decCounter);
+}
+

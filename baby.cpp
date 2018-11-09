@@ -4,7 +4,7 @@
 #include "line.h"
 #include "baby.h"
 
-using namespace std;
+ using namespace std;
 
 /*
   converts an array of booleans (1's and 0's) to a decimal number (little-endian)
@@ -61,6 +61,102 @@ void ManchesterBaby::runBaby() {
     output(); //display the store, PI, CI, acucmulator
   } while (instruction != 7); //run until the decoded opcode is halt/stop
 }
+
+
+
+/*
+  Set the Control Instuction to what is in the store
+*/
+void jmp(){
+  controlInstruction = store;
+}
+
+/*
+  Add the Store to the Control Inctruction
+*/
+void jrp(){
+  controlInstruction= controlInstruction+store;
+}
+
+/*
+  Make the stores values a negative
+*/
+void ldna(){
+  store= -store;
+}
+
+/*
+  Set the store to the accumulator
+*/
+void sto(){
+  store=accumulator;
+}
+
+/*
+  Subtract the store from the accumulator
+*/
+void sub(){
+  accumulator= accumulator-store;
+}
+
+/*
+  Add one to the control instruction if the accumulator is negative
+*/
+void cmp(){
+  if(accumulator<0){controlInstruction=controlInstruction+1;}
+}
+
+/*
+  Halts the operation
+*/
+void stop(){
+  stopLamp=true;
+  exit(0);
+}
+
+
+
+/*
+  This method contains the instruction set for the Manchester Baby
+  Parameter(s):
+  opcode- The instruction number
+*/
+void execute(int opcode){
+  //Process the opcode
+  switch(opcode){
+    case 0: 
+    //Set CI to content of Store location
+      void jmp();
+    case 1:
+    //Add content of Store location to CI
+      void jrp();
+    case 2:
+    //Load Accumulator with negative form of store contents
+      void ldna();
+    case 3:
+    //Copy Accumulator to Store location
+      void sto();
+    case 4:
+    //Subtract content of Store location from Accumulator
+      void sub();
+    case 5:
+    //Subtract content of Store location from Accumulator
+      void sub();
+    case 6:
+    //Increment CI if Accumulator value negative, otherwise do nothing
+      void cmp();
+    case 7:
+    //Halt the Baby and light the 'stop lamp'
+      void stp();
+  }
+
+}
+
+
+
+
+
+
 
 int main() {
   ManchesterBaby mb;

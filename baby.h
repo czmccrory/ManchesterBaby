@@ -1,3 +1,9 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include "line.h"
+#include "baby.h"
+
 using namespace std;
 
 /* define new types for readability */
@@ -25,6 +31,8 @@ class ManchesterBaby
     int decCounter = 0;
 
     Line binCounter;
+
+    bool stopLamp=false;
 
   public:
     // runs the program

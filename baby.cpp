@@ -1,160 +1,142 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <cmath>
+#include "line.h"
+#include "baby.h"
 
- using namespace std;
+using namespace std;
 
-/* define new types for readability */
-typedef vector<bool, 32> Line; // 32 bit Line of 1's/0's
-typedef vector<Line, 32> Store; // 32 x 32 bit Line
-
-class ManchesterBaby
+/*
+  converts an array of booleans (1's and 0's) to a decimal number (little-endian)
+*/
+int binToDec(vector<bool> * bin)
 {
-  private:
-    // the store is 32x32 bit memory
-    Store store;
+  int length = bin->size();
+  int decimal = 0;
 
-    // holds an opcode (+ operand)
-    Line presentInstruction;
+  for (int i = 0; i < length; i++)
+  {
+    if (bin->at(i) == 1) //add value of 2^(length - i - 1)(value of its position in the binary number)
+    {
+      decimal += (static_cast<int>(pow(2, i)));
+    }
+  }
 
-    // holds an address
-    Line controlInstruction;
-
-    // stores values during calculations?
-    Line accumulator;
-
-    // decimal counter
-    int decCounter = 0;
-
-    // stores which line you are at
-    Line binCounter;
-
-  public:
-    // runs the program
-    void runBaby();
-
-    // Takes in a 32x32 machine code file and places it into the store
-    void readProgramFromFile();
-
-    // increments control instruction by one
-    void incrementCI();
-
-    // fetches the next instruction (puts that into PI)
-    void fetch(); // read CI (memory address), copy the instruction from store to PI
-
-    // decodes the instruction (and fetches the operand if needed)
-    void decode(); // decodes Line into Opcode + operand (operand is a memory address)
-
-    // executes the given instruction (see tabbed bit below)
-    void execute();
-
-      // instruction set
-
-      void jmp(); // set CI to content of Store (memory location) (CI = S)
-
-      void jrp(); // add content of store location to CI (CI = CI + S)
-
-      void ldna(); // load accumulator with negative form of store (A = -S)
-
-      void sto(); // copy accumulator contents to store location (S = A)
-
-      void sub(); // subtract content of store location from accumulator (A = A - S)
-
-      void cmp(); // increment CI if accumulator value <0 (if A < 0) { CI++ };
-
-      void stp(); // stop (halt the program)
-
-      // prints the store
-      void output();
+  return decimal;
 }
 
-/* Initialises the passed in Line to all 0's */
-void initialiseLine(Line* line)
+
+/*
+  Converts a decimal number to a vector<bool>(32) in little-endian and returns the pointer
+*/
+vector<bool>* decToBin(int dec) 
 {
-  (*line).fill(0);
-}
+  vector<bool>* bin = new vector<bool>(32, 0); // vector to hold binary value (in this case size 8 for rule.)
 
-/* Converts an array of booleans (1's and 0's) to a decimal number (little-endian) */
-int binToDec(vector<bool> bin)
-{
-	int length = bin.size();
-	int decimal = 0;
+  for (int i=31; dec>0; i--)
+  {
+    // take the remainder of the dec / 2 and save it to the vector
+    // this value will always be 1 or 0
+    (*bin).at(31-i) = dec%2;
+    // update dec
+    dec /= 2;
+  }
+    return bin;
 
-	for (int i = 0; i < length; i++)
-	{
-		if (bin.at(i) == 1) //add value of 2^(length - i - 1)(value of its position in the binary number)
-		{
-			decimal += (static_cast<int>(pow(2, i)));
-		}
-	}
-
-	return decimal;
 }
 
 void ManchesterBaby::incrementCI() {
-	decCounter++;
-	binCounter = decToBin(decCounter);
+  decCounter++;
+ // binCounter = decToBin(decCounter);
 }
 
 //Fetches next instruction
-void fetch()
+void ManchesterBaby::fetch()
 {
-	//CI (Control Instruction) points to memory address of the current line at the store
-	controlInstruction = binCounter;
+  //CI (Control Instruction) points to memory address of the current line at the store
+  controlInstruction = binCounter;
 
-	//PI (Present Instruction) is set to the current line of the store
-	presentInstruction = Store.at(decCounter);
+  //PI (Present Instruction) is set to the current line of the store
+  presentInstruction = store.at(decCounter);
 }
 
 
 /*
   Set the Control Instuction to what is in the store
 */
-void jmp(){
-  controlInstruction = store;
+void ManchesterBaby::jmp(int operand){
+ // controlInstruction = store.at(operand);
+
+  cout << "JMP " <<operand <<endl;
 }
 
 /*
   Add the Store to the Control Inctruction
 */
-void jrp(){
-  controlInstruction= controlInstruction+store;
+void ManchesterBaby::jrp(int operand){
+  //controlInstruction= controlInstruction+store.at(operand);
+  cout << "JRP " <<operand <<endl;
 }
 
 /*
   Make the stores values a negative
+
+  NO
 */
-void ldna(){
-  store= -store;
+void ManchesterBaby::ldn(int operand){
+  //store= -store;
+  cout << "LDN " <<operand <<endl;
 }
 
 /*
   Set the store to the accumulator
 */
-void sto(){
-  store=accumulator;
+void ManchesterBaby::sto(int operand){
+  store.at(operand)=accumulator;
+  cout << "STO " <<operand <<endl;
 }
 
 /*
   Subtract the store from the accumulator
 */
-void sub(){
-  accumulator= accumulator-store;
+void ManchesterBaby::sub(int operand){
+ // accumulator= accumulator-store;
+  cout << "SUB " <<operand <<endl;
 }
 
 /*
   Add one to the control instruction if the accumulator is negative
 */
-void cmp(){
-  if(accumulator<0){controlInstruction=controlInstruction+1;}
+void ManchesterBaby::cmp(){
+  //if(accumulator<0){controlInstruction=controlInstruction+1;}
+  cout << "CMP " <<endl;
 }
 
 /*
   Halts the operation
 */
-void stop(){
+void ManchesterBaby::stp(){
   stopLamp=true;
+  cout <<"STP " <<endl;
   exit(0);
+}
+
+
+
+
+int ManchesterBaby::decodeInstruction() {
+  vector <bool> * ins = presentInstruction.getInstruction();
+  int ret = binToDec(ins);
+  delete ins;
+  return ret;
+}
+
+int ManchesterBaby::decodeOperand(){
+  vector <bool> * operand = presentInstruction.getOperand();
+  int ret = binToDec(operand);
+  delete operand;
+  return ret;
 }
 
 
@@ -164,52 +146,75 @@ void stop(){
   Parameter(s):
   opcode- The instruction number
 */
-void execute(int opcode){
+void ManchesterBaby::execute(int opcode, int operand){
   //Process the opcode
   switch(opcode){
     case 0: 
     //Set CI to content of Store location
-      void jmp();
+      jmp(operand);
     case 1:
     //Add content of Store location to CI
-      void jrp();
+      jrp(operand);
     case 2:
     //Load Accumulator with negative form of store contents
-      void ldna();
+      ldn(operand);
     case 3:
     //Copy Accumulator to Store location
-      void sto();
+      sto(operand);
     case 4:
     //Subtract content of Store location from Accumulator
-      void sub();
+      sub(operand);
     case 5:
     //Subtract content of Store location from Accumulator
-      void sub();
+      sub(operand);
     case 6:
     //Increment CI if Accumulator value negative, otherwise do nothing
-      void cmp();
+      cmp();
     case 7:
     //Halt the Baby and light the 'stop lamp'
-      void stp();
+      stp();
   }
 
 }
 
+void ManchesterBaby::readFromFile(string path){
+  ifstream file (path);
+  if(file){
+    string l;
+    while (getline(file, l)) {
+      Line myline(l);
+      store.push_back(myline);
+    }
+    //file.close();
+  }
+  else {
+    cout << "Unable to open file" << endl;
+  }
+  file.close();
+
+}
+
+void ManchesterBaby::output() {
+  cout<< "here we would output the hw" <<endl;
+}
+
+
+void ManchesterBaby::runBaby() {
+  readFromFile("BabyTest1-MC.txt");
+
+  int instruction;
+  do {
+    incrementCI(); //increment program counter
+    fetch(); //get next line and save it to the PI
+    instruction = decodeInstruction(); //get the decimal opcode number
+    int operand = decodeOperand();
+    execute(instruction, operand); //execute the instruction
+    output(); //display the store, PI, CI, acucmulator
+  } while (instruction != 7); //run until the decoded opcode is halt/stop
+}
 
 int main() {
   ManchesterBaby mb;
   mb.runBaby();
   return 0; //later return the output of mb.runBaby() (if there were errors)
-
-void readFromFile(){
-	ifstream file ("");
-	if(file.is_open()){
-		for(int i=0; i<32; i++) {
-			//do something
-		}
-		file.close();
-	}
-	else
-		cout << "Unable to open file" << endl;
-
 }

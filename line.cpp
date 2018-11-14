@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <vector>
 #include "line.h"
 
@@ -21,28 +22,53 @@ Line::Line() {
 	line =  new vector<bool>(32, 0);
 }
 
+Line::Line(string s) {
+	//line = new vector<bool>;
+	set(s);
+}
+
 Line::~Line() {
-	delete line;
+	//delete line;
 }
 
 vector<bool> * Line::getInstruction() {
 	return new vector<bool>(line->begin() + 13, line->begin() + 16);
 }
 
-vector<bool> * Line::getAddress() {
+vector<bool> * Line::getOperand() {
 	return new vector<bool>(line->begin(), line->begin() +13);
 }
 
+void Line::set(string s) {
+	cout << "trying to set(string) " << endl;
+	//delete line;
+	line = new vector<bool>; //use something else to empty it
+	for (char &c : s) {
+		if (c == '0') {
+			line->push_back(0);
+		} else { //anything that's not 0
+			line->push_back(1);
+		}
+		cout << c;
+	}
+	cout <<endl << "all set. " <<endl;
+	/*
+	for (size_t i = 0; i < s.size(); i++) {
+		line->push_back(s);
+	}
+	*/
+}
 
 /*
 //for testing
 int main () {
-	Line l;
+	Line l("10011000000000110000000000000000");
 	l.print();
 	vector<bool> * ins = l.getInstruction();
 	printVector(ins);
-	printVector(l.getAddress());
+	printVector(l.getOperand());
 	return 0;
 }
 */
+
 

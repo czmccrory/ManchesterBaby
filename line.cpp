@@ -4,11 +4,12 @@
 #include "line.h"
 
 
+
 //this should not be here
 void printVector(vector<bool> * v) {
 	vector<bool>::iterator it;
 	for (it=v->begin(); it != v->end(); ++it) {
-		cout << *it << " " <<flush;
+		cout << *it << "" <<flush;
 	}
 	cout <<endl;
 	
@@ -40,11 +41,11 @@ vector<bool> * Line::getInstruction() {
 }
 
 vector<bool> * Line::getOperand() {
-	return new vector<bool>(line->begin(), line->begin() +13);
+	return new vector<bool>(line->begin(), line->begin() +operandWidth);
 }
 
 void Line::setOperand(vector<bool> *op) {
-	cout << "setting operand with size " << op->size() <<endl;
+	//cout << "setting operand with size " << op->size() <<endl;
 	for (size_t i=0; i< op->size(); i++) {
 		line->at(i) = op->at(i);
 	}
@@ -60,9 +61,9 @@ void Line::set(string s) {
 		} else { //anything that's not 0
 			line->push_back(1);
 		}
-		cout << c;
+		//cout << c;
 	}
-	cout <<endl;// << "all set. " <<endl;
+	//cout <<endl;// << "all set. " <<endl;
 	/*
 	for (size_t i = 0; i < s.size(); i++) {
 		line->push_back(s);

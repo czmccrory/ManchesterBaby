@@ -8,6 +8,8 @@ using namespace std;
 const static int SIZE = 32;
 //void printVector(vector<bool>*);
 
+const static unsigned int operandWidth = 5, opcodeWidth = 3; 
+
 class Line {
 private:
 	vector<bool> * line;

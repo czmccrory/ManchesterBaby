@@ -7,11 +7,21 @@
 
 using namespace std;
 
+
+void printVector2(vector<bool> * v) {
+	vector<bool>::iterator it;
+	for (it=v->begin(); it != v->end(); ++it) {
+		cout << *it << " " <<flush;
+	}
+	cout <<endl;
+	
+}
 /*
   converts an array of booleans (1's and 0's) to a decimal number (little-endian)
 */
 int binToDec(vector<bool> * bin)
 {
+	bool negative = bin->back(); //1/true means negative, 0/false means positive
   int length = bin->size();
   int decimal = 0;
 
@@ -23,9 +33,18 @@ int binToDec(vector<bool> * bin)
     }
   }
 
-  return decimal;
+  if (negative) {
+  	return 0-decimal;
+  } else {
+	return decimal;
+  }
+
 }
 
+int uBinToDec(vector<bool> *bin) {
+	bin->push_back(0);
+	return binToDec(bin);
+}
 
 /*
   Converts a decimal number to a vector<bool>(32) in little-endian and returns the pointer
@@ -34,28 +53,34 @@ vector<bool>* decToBin(int dec)
 {
   vector<bool>* bin = new vector<bool>(32, 0); // vector to hold binary value (in this case size 8 for rule.)
 
-  for (int i=31; dec>0; i--)
+  const size_t maxDec = pow(2,operandWidth-1); //we are using operandWidth-bit numbers
+   //with the last bit as the sign
+  bool negative;
+  if (dec < 0) {
+  	negative = true;
+  } else {
+  	negative = false;
+  }
+  for (int i=maxDec-1; dec>0; i--)
   {
     // take the remainder of the dec / 2 and save it to the vector
     // this value will always be 1 or 0
-    (*bin).at(31-i) = dec%2;
+    (*bin).at(maxDec-i) = dec%2;
     // update dec
     dec /= 2;
   }
-    return bin;
+  bin->at(operandWidth-1) = negative; //setting the 13th bit
+
+  return bin;
 
 }
 
-/*
-void printVector(vector<bool> * v) {
-	vector<bool>::iterator it;
-	for (it=v->begin(); it != v->end(); ++it) {
-		cout << *it << " " <<flush;
-	}
-	cout <<endl;
-	
+
+
+ManchesterBaby::ManchesterBaby() {
+	Line l;
+	store = Store(32,l);
 }
-*/
 
 void ManchesterBaby::incrementCI() {
   decCounter++;
@@ -67,10 +92,10 @@ void ManchesterBaby::fetch()
 {
   //CI (Control Instruction) points to memory address of the current line at the store
   controlInstruction = binCounter;
-
   //PI (Present Instruction) is set to the current line of the store
   presentInstruction = store.at(decCounter);
 }
+
 
 
 /*
@@ -144,7 +169,6 @@ void ManchesterBaby::sub(int operand){
   Add one to the control instruction if the accumulator is negative
 */
 void ManchesterBaby::cmp(){
-  //if(accumulator<0){controlInstruction=controlInstruction+1;}
   cout << "CMP " <<endl;
   vector <bool> *accumulatorPtr=accumulator.getOperand();
   int accumulatorValue= binToDec(accumulatorPtr);
@@ -167,16 +191,14 @@ void ManchesterBaby::stp(){
 
 int ManchesterBaby::decodeInstruction() {
   vector <bool> * ins = presentInstruction.getInstruction();
-  int ret = binToDec(ins);
+  int ret = uBinToDec(ins);
   delete ins;
   return ret;
 }
 
 int ManchesterBaby::decodeOperand(){
   vector <bool> * operand = presentInstruction.getOperand();
-  //printVector(operand);
   int ret = binToDec(operand);
-  //cout << ret << endl;
   delete operand;
   return ret;
 }
@@ -232,11 +254,12 @@ void ManchesterBaby::readFromFile(string path){
   ifstream file (path);
   if(file){
     string l;
+    size_t i = 0;
     while (getline(file, l)) {
       Line myline(l);
-      store.push_back(myline);
+      store.at(i) = myline;
+      i++;
     }
-    //file.close();
   }
   else {
     cout << "Unable to open file" << endl;
@@ -244,6 +267,8 @@ void ManchesterBaby::readFromFile(string path){
   file.close();
 
 }
+
+
 
 void ManchesterBaby::output() {
   //cout<< "here we would output the hardware state" <<endl;
@@ -272,8 +297,9 @@ void ManchesterBaby::output() {
 
 void ManchesterBaby::runBaby() {
   readFromFile("BabyTest1-MC.txt");
-
+  //cout << "read from file successfully" <<endl;
   int instruction;
+  char temp;
   do {
     incrementCI(); //increment program counter
     fetch(); //get next line and save it to the PI
@@ -281,8 +307,8 @@ void ManchesterBaby::runBaby() {
     int operand = decodeOperand();
     execute(instruction, operand); //execute the instruction
     output(); //display the store, PI, CI, acucmulator
-    //cout << "runBaby instruction " <<instruction <<endl;
-  } while (instruction != 7); //run until the decoded opcode is halt/stop
+    cin.get(temp);
+  } while (instruction != 7 || temp != '\n'); //run until the decoded opcode is halt/stop
 }
 
 int main() {

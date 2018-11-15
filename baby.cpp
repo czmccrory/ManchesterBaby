@@ -246,7 +246,13 @@ void ManchesterBaby::readFromFile(string path){
 }
 
 void ManchesterBaby::output() {
-  cout<< "here we would output the hardware state" <<endl;
+  //cout<< "here we would output the hardware state" <<endl;
+
+  for (int i = 0; i < store.size(); ++i)
+  {
+    //Print line
+    store.at(i).print();
+  }
 }
 
 

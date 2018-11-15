@@ -31,6 +31,10 @@ Line::~Line() {
 	//delete line;
 }
 
+vector<bool> * Line::get(){
+	return line;
+}
+
 vector<bool> * Line::getInstruction() {
 	return new vector<bool>(line->begin() + 13, line->begin() + 16);
 }
@@ -40,6 +44,7 @@ vector<bool> * Line::getOperand() {
 }
 
 void Line::setOperand(vector<bool> *op) {
+	cout << "setting operand with size " << op->size() <<endl;
 	for (size_t i=0; i< op->size(); i++) {
 		line->at(i) = op->at(i);
 	}

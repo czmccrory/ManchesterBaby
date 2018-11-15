@@ -32,8 +32,6 @@ class ManchesterBaby
     bool stopLamp = false;
 
   public:
-    ManchesterBaby(); //constructor
-
     // runs the program
     void runBaby();
 
@@ -46,9 +44,13 @@ class ManchesterBaby
     // fetches the next instruction (puts that into PI)
     void fetch(); // read CI (memory address), copy the instruction from store to PI
 
+    void extHWare(); // extends hardware - more memory space
+
     // decodes the instruction (and fetches the operand if needed)
     int decodeInstruction(); // decodes Line into Opcode 
-    int decodeOperand(); //+ operand (operand is a memory address)
+    int decodeOperand(); // operand (operand is a memory address)
+    int incVar(int var); // increments variable
+    int decVar(int var); // decrements variable
     // executes the given instruction (see tabbed bit below)
     void execute(int, int);
 
@@ -63,6 +65,8 @@ class ManchesterBaby
       void sto(int); // copy accumulator contents to store location (S = A)
 
       void sub(int); // subtract content of store location from accumulator (A = A - S)
+
+      void mul(int); // multiplies content of store location with accumulator (A = A * S)
 
       void cmp(); // increment CI if accumulator value <0 (if A < 0) { CI++ };
 

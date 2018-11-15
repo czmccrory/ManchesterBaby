@@ -15,7 +15,7 @@ public:
 	void print();
 	vector<bool> * getInstruction(); //get the opcode bools from the appropriate places //maybe not int
 	vector<bool> * getOperand(); //get the address bools from approptiate places in the array //maybe not int
-
+	vector<bool> * get();
 	void setOperand(vector<bool>*);
 
 	void set(string);

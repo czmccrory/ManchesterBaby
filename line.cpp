@@ -39,8 +39,14 @@ vector<bool> * Line::getOperand() {
 	return new vector<bool>(line->begin(), line->begin() +13);
 }
 
+void Line::setOperand(vector<bool> *op) {
+	for (size_t i=0; i< op->size(); i++) {
+		line->at(i) = op->at(i);
+	}
+}
+
 void Line::set(string s) {
-	cout << "trying to set(string) " << endl;
+	//cout << "trying to set(string) " << endl;
 	//delete line;
 	line = new vector<bool>; //use something else to empty it
 	for (char &c : s) {
@@ -51,7 +57,7 @@ void Line::set(string s) {
 		}
 		cout << c;
 	}
-	cout <<endl << "all set. " <<endl;
+	cout <<endl;// << "all set. " <<endl;
 	/*
 	for (size_t i = 0; i < s.size(); i++) {
 		line->push_back(s);

@@ -59,7 +59,7 @@ void printVector(vector<bool> * v) {
 
 void ManchesterBaby::incrementCI() {
   decCounter++;
-  //binCounter = decToBin(decCounter);
+  binCounter.setOperand(decToBin(decCounter));
 }
 
 //Fetches next instruction

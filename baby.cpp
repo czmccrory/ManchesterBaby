@@ -46,6 +46,17 @@ vector<bool>* decToBin(int dec)
 
 }
 
+/*
+void printVector(vector<bool> * v) {
+	vector<bool>::iterator it;
+	for (it=v->begin(); it != v->end(); ++it) {
+		cout << *it << " " <<flush;
+	}
+	cout <<endl;
+	
+}
+*/
+
 void ManchesterBaby::incrementCI() {
   decCounter++;
  // binCounter = decToBin(decCounter);
@@ -55,7 +66,7 @@ void ManchesterBaby::incrementCI() {
 void ManchesterBaby::fetch()
 {
   //CI (Control Instruction) points to memory address of the current line at the store
-  controlInstruction = binCounter;
+  //controlInstruction = binCounter;
 
   //PI (Present Instruction) is set to the current line of the store
   presentInstruction = store.at(decCounter);
@@ -134,7 +145,9 @@ int ManchesterBaby::decodeInstruction() {
 
 int ManchesterBaby::decodeOperand(){
   vector <bool> * operand = presentInstruction.getOperand();
+  //printVector(operand);
   int ret = binToDec(operand);
+  //cout << ret << endl;
   delete operand;
   return ret;
 }
@@ -147,32 +160,41 @@ int ManchesterBaby::decodeOperand(){
   opcode- The instruction number
 */
 void ManchesterBaby::execute(int opcode, int operand){
+	//cout << "opcode " << opcode << ", operand " <<operand <<endl;
   //Process the opcode
   switch(opcode){
     case 0: 
     //Set CI to content of Store location
       jmp(operand);
+      break;
     case 1:
     //Add content of Store location to CI
       jrp(operand);
+      break;
     case 2:
     //Load Accumulator with negative form of store contents
       ldn(operand);
+      break;
     case 3:
     //Copy Accumulator to Store location
       sto(operand);
+      break;
     case 4:
     //Subtract content of Store location from Accumulator
       sub(operand);
+      break;
     case 5:
     //Subtract content of Store location from Accumulator
       sub(operand);
+      break;
     case 6:
     //Increment CI if Accumulator value negative, otherwise do nothing
       cmp();
+      break;
     case 7:
     //Halt the Baby and light the 'stop lamp'
       stp();
+      break;
   }
 
 }
@@ -195,7 +217,7 @@ void ManchesterBaby::readFromFile(string path){
 }
 
 void ManchesterBaby::output() {
-  cout<< "here we would output the hw" <<endl;
+  cout<< "here we would output the hardware state" <<endl;
 }
 
 
@@ -210,6 +232,7 @@ void ManchesterBaby::runBaby() {
     int operand = decodeOperand();
     execute(instruction, operand); //execute the instruction
     output(); //display the store, PI, CI, acucmulator
+    //cout << "runBaby instruction " <<instruction <<endl;
   } while (instruction != 7); //run until the decoded opcode is halt/stop
 }
 

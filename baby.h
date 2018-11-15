@@ -1,3 +1,6 @@
+#ifndef _BABY_H_
+#define _BABY_H_
+
 using namespace std;
 
 /* define new types for readability */
@@ -67,3 +70,5 @@ class ManchesterBaby
     void output();
 
 };
+
+#endif

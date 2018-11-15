@@ -32,6 +32,8 @@ class ManchesterBaby
     bool stopLamp = false;
 
   public:
+    ManchesterBaby(); //constructor
+    
     // runs the program
     void runBaby();
 

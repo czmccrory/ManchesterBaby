@@ -77,43 +77,67 @@ void ManchesterBaby::fetch()
   Set the Control Instuction to what is in the store
 */
 void ManchesterBaby::jmp(int operand){
- // controlInstruction = store.at(operand);
-
   cout << "JMP " <<operand <<endl;
+  //Get the operand from the store
+  vector <bool> *ci= store.at(operand).getOperand();
+  //Set the counter t the operand
+  decCounter=binToDec(ci);
 }
 
 /*
   Add the Store to the Control Inctruction
 */
 void ManchesterBaby::jrp(int operand){
-  //controlInstruction= controlInstruction+store.at(operand);
   cout << "JRP " <<operand <<endl;
+  
+  //Get the operand from the store
+  vector <bool> *ci= store.at(operand).getOperand();
+  //Add the operands to the control instruction
+  decCounter+=binToDec(ci);
 }
 
 /*
-  Make the stores values a negative
-
-  NO
+  Get a value from the store and make the negative of that value and store it in the accumulator
 */
 void ManchesterBaby::ldn(int operand){
-  //store= -store;
   cout << "LDN " <<operand <<endl;
+  //Get the operand valye from the store
+  vector<bool> *valueFromStore= store.at(operand).getOperand();
+  //COnvert the binary number to a decimal number and make it negative
+  int negativeValue= -(binToDec(valueFromStore));
+  //Add set the accumulator to the negative operand
+  accumulator.setOperand(decToBin(negativeValue));
 }
 
 /*
   Set the store to the accumulator
 */
 void ManchesterBaby::sto(int operand){
-  store.at(operand)=accumulator;
   cout << "STO " <<operand <<endl;
+  store.at(operand)=accumulator;
 }
 
 /*
   Subtract the store from the accumulator
 */
 void ManchesterBaby::sub(int operand){
- // accumulator= accumulator-store;
   cout << "SUB " <<operand <<endl;
+  //A=A-S
+ 
+  //Get the accumulator
+  vector <bool> *accumulatorPtr=accumulator.getOperand();
+
+  //Get the Store operand
+  vector<bool> *storePtr= store.at(operand).getOperand();
+
+  //Convert to int
+  int accumulatorDec= binToDec(accumulatorPtr);
+  int storeDec= binToDec(storePtr);
+
+  accumulatorDec= (accumulatorDec-storeDec);
+
+  accumulator.setOperand(decToBin(accumulatorDec));
+
 }
 
 /*
@@ -122,6 +146,11 @@ void ManchesterBaby::sub(int operand){
 void ManchesterBaby::cmp(){
   //if(accumulator<0){controlInstruction=controlInstruction+1;}
   cout << "CMP " <<endl;
+  vector <bool> *accumulatorPtr=accumulator.getOperand();
+  int accumulatorValue= binToDec(accumulatorPtr);
+  if(accumulatorValue<0){
+    incrementCI();
+  }
 }
 
 /*

@@ -59,14 +59,14 @@ void printVector(vector<bool> * v) {
 
 void ManchesterBaby::incrementCI() {
   decCounter++;
- // binCounter = decToBin(decCounter);
+  //binCounter = decToBin(decCounter);
 }
 
 //Fetches next instruction
 void ManchesterBaby::fetch()
 {
   //CI (Control Instruction) points to memory address of the current line at the store
-  //controlInstruction = binCounter;
+  controlInstruction = binCounter;
 
   //PI (Present Instruction) is set to the current line of the store
   presentInstruction = store.at(decCounter);

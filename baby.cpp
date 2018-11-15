@@ -248,11 +248,25 @@ void ManchesterBaby::readFromFile(string path){
 void ManchesterBaby::output() {
   //cout<< "here we would output the hardware state" <<endl;
 
+  cout<< "Store: \n" <<endl;
   for (int i = 0; i < store.size(); ++i)
   {
     //Print line
     store.at(i).print();
   }
+
+  cout <<""<<endl;
+  cout<< "present Instruction" <<endl;
+  presentInstruction.print();
+
+  cout << "" <<endl;
+  cout << "Control Instruction" <<endl;
+  controlInstruction.print();
+
+  cout << "" <<endl;
+  cout << "Accumulator" <<endl;
+  accumulator.print();
+  cout << "" <<endl;
 }
 
 

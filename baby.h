@@ -53,6 +53,7 @@ class ManchesterBaby
     int decodeOperand(); // operand (operand is a memory address)
     int incVar(int var); // increments variable
     int decVar(int var); // decrements variable
+
     // executes the given instruction (see tabbed bit below)
     void execute(int, int);
 
@@ -69,6 +70,10 @@ class ManchesterBaby
       void sub(int); // subtract content of store location from accumulator (A = A - S)
 
       void mul(int); // multiplies content of store location with accumulator (A = A * S)
+
+      void posldn(int); // load accumulator with positive form of store (A = S)
+
+      void add(int); // add content of store location to accumulator (A = A + S)
 
       void cmp(); // increment CI if accumulator value <0 (if A < 0) { CI++ };
 

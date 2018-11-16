@@ -89,8 +89,10 @@ void ManchesterBaby::fetch()
 */
 void ManchesterBaby::jmp(int operand){
   cout << "JMP " << operand << endl;
+
   //Get the operand from the store
   vector <bool> *ci = store.at(operand).getOperand();
+  
   //Set the counter t the operand
   decCounter = binToDec(ci);
 }
@@ -103,6 +105,7 @@ void ManchesterBaby::jrp(int operand){
   
   //Get the operand from the store
   vector <bool> *ci = store.at(operand).getOperand();
+
   //Add the operands to the control instruction
   decCounter += binToDec(ci);
 }
@@ -112,10 +115,13 @@ void ManchesterBaby::jrp(int operand){
 */
 void ManchesterBaby::ldn(int operand){
   cout << "LDN " << operand << endl;
-  //Get the operand valye from the store
+
+  //Get the operand value from the store
   vector<bool> *valueFromStore = store.at(operand).getOperand();
-  //COnvert the binary number to a decimal number and make it negative
+
+  //Convert the binary number to a decimal number and make it negative
   int negativeValue = -(binToDec(valueFromStore));
+
   //Add set the accumulator to the negative operand
   accumulator.setOperand(decToBin(negativeValue));
 }
@@ -133,7 +139,7 @@ void ManchesterBaby::sto(int operand){
 */
 void ManchesterBaby::sub(int operand){
   cout << "SUB " << operand << endl;
-  //A=A-S
+
  
   //Get the accumulator
   vector <bool> *accumulatorPtr = accumulator.getOperand();
@@ -183,7 +189,7 @@ void ManchesterBaby::stp(){
   Multiplies accumulator and store
 */
 void ManchesterBaby::mul(int operand) {
-  cout << "MUL" << endl;
+  cout << "MUL" << operand << endl;
 
   //Get accumulator
   vector<bool> *accumulatorPtr = accumulator.getOperand();
@@ -201,7 +207,41 @@ void ManchesterBaby::mul(int operand) {
   accumulator.setOperand(accumulatorDec);
 }
 
+/*
+  Get a value from the store and store it in the accumulator
+*/
+void ManchesterBaby::posldn(int operand){
+  cout << "POSLDN " << operand << endl;
 
+  //Get the operand value from the store
+  vector<bool> *valueFromStore = store.at(operand).getOperand();
+
+  //Convert the binary number to a decimal number
+  int positiveValue = binToDec(valueFromStore);
+
+  //Add set the accumulator to the positive operand
+  accumulator.setOperand(decToBin(positiveValue));
+}
+
+/*
+  Add content of store to Accumulator
+*/
+void ManchesterBaby::add(int operand) {
+  cout << "ADD" << operand << endl;
+
+  //Get the operand value from the store
+  vector<bool> *valueFromAccumulator = store.at(operand).getOperand();
+  vector<bool> *valueFromStore = store.at(operand).getOperand();
+
+  //Convert the binary number to a decimal number
+  int accumulatorDec = binToDec(valueFromAccumulator);
+  int storeDec = binToDec(valueFromStore);
+
+  //Perform calculation
+  accumulatorDec += storeDec;
+
+  accumulator.setOperand(accumulatorDec);
+}
 
 /* 
   Extends hardware of Baby - more memory space 

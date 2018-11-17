@@ -6,8 +6,6 @@ using namespace std;
 /* define new types for readability */
 typedef vector<Line> Store; // 32 x 32 bit memory
 
-//enum Instruction {JMP, JRP, LDN, STO, SUB, CMP, STP}; //may later use these as constants
-
 int binToDec(vector<bool>);
 
 class ManchesterBaby
@@ -19,15 +17,15 @@ class ManchesterBaby
     // holds an opcode (+ operand)
     Line presentInstruction;
 
-    // holds an address
-    Line controlInstruction;
+    // holds address/line number in Store of an instruction
+    vector<bool> * controlInstruction;
 
-    // stores values during calculations??
+    // stores values during calculations
     Line accumulator;
 
-    int decCounter = 0;
+    int instructionCounter = 0;
 
-    Line binCounter;
+    //Line binCounter;
 
     bool stopLamp = false;
 

@@ -12,7 +12,7 @@ void printVector2(vector<bool> * v) {
   for (it=v->begin(); it != v->end(); ++it) {
     cout << *it << " " <<flush;
   }
-  cout <<endl;
+  cout << endl;
   
 }
 
@@ -46,23 +46,26 @@ vector<bool>* decToBin(int dec)
   const size_t maxDec = pow(2,operandWidth-1); //we are using operandWidth-bit numbers
   bool negative;
 
-  for (int i=31; dec>0; i--)
+  for (int i=31; dec>0; i--) {
    //with the last bit as the sign
-  if (dec < 0) {
-    negative = true;
-  } else {
-    negative = false;
-  }
-  for (int i=maxDec-1; dec>0; i--)
-  {
-    // take the remainder of the dec / 2 and save it to the vector
-    // this value will always be 1 or 0
-    (*bin).at(31-i) = dec%2;
-    (*bin).at(maxDec-i) = dec%2;
-    // update dec
-    dec /= 2;
-  }
+    if (dec < 0) {
+      negative = true;
+    } else {
+      negative = false;
+    }
+
+    for (int i=maxDec-1; dec>0; i--)
+    {
+      // take the remainder of the dec / 2 and save it to the vector
+      // this value will always be 1 or 0
+      (*bin).at(31-i) = dec%2;
+      (*bin).at(maxDec-i) = dec%2;
+      // update dec
+      dec /= 2;
+    }
     return bin;
+  }
+
   bin->at(operandWidth-1) = negative; //setting the 13th bit
   return bin;
 }
@@ -76,7 +79,7 @@ ManchesterBaby::ManchesterBaby() {
   Increments CI
 */
 void ManchesterBaby::incrementCI() {
-  decCounter++;
+  instructionCounter++;
 }
 
 /*
@@ -84,11 +87,11 @@ void ManchesterBaby::incrementCI() {
 */
 void ManchesterBaby::fetch()
 {
-  //CI (Control Instruction) points to memory address of the current line at the store
-  controlInstruction = binCounter;
+  //CI (Control Instruction) holds the line number in the store of an instruction
+  controlInstruction = decToBin(instructionCounter);
 
-  //PI (Present Instruction) is set to the current line of the store
-  presentInstruction = store.at(decCounter);
+  //PI (Present Instruction) holds the current line of the store
+  presentInstruction = store.at(instructionCounter);
 }
 
 /*
@@ -101,7 +104,7 @@ void ManchesterBaby::jmp(int operand){
   vector <bool> *ci = store.at(operand).getOperand();
   
   //Set the counter t the operand
-  decCounter = binToDec(ci);
+  instructionCounter = binToDec(ci);
 }
 
 /*
@@ -114,7 +117,7 @@ void ManchesterBaby::jrp(int operand){
   vector <bool> *ci = store.at(operand).getOperand();
 
   //Add the operands to the control instruction
-  decCounter += binToDec(ci);
+  instructionCounter += binToDec(ci);
 }
 
 /*
@@ -434,41 +437,45 @@ void ManchesterBaby::execute(int opcode, int operand){
 }
 
 void ManchesterBaby::readFromFile(string path){
+  string name;
   ifstream file (path);
   if(file){
     string l;
-    size_t i = 0;
+    size_t i = 1;
 
     while (getline(file, l)) {
       Line myline(l);
       store.at(i) = myline;
       i++;
     }
+
+    /*if(file.is_open()){
+      cout << file.rdbuf();
+    }*/
   }
   else {
     cout << "Unable to open file" << endl;
   }
   file.close();
-
 }
 
 void ManchesterBaby::output() {
-  cout<< "here we would output the hardware state" <<endl;
+  cout << "here we would output the hardware state" << endl;
 }
 
 
 void ManchesterBaby::runBaby() {
   readFromFile("BabyTest1-MC.txt");
   char temp;
-
   int instruction;
+  
   do {
     incrementCI(); //increment program counter
     fetch(); //get next line and save it to the PI
     instruction = decodeInstruction(); //get the decimal opcode number
     int operand = decodeOperand();
     execute(instruction, operand); //execute the instruction
-    output(); //display the store, PI, CI, acucmulator
+    //output(); //display the store, PI, CI, acucmulator
     cin.get(temp);
   } while (instruction != 7 || temp != '\n'); //run until the decoded opcode is halt/stop
 }
@@ -476,5 +483,6 @@ void ManchesterBaby::runBaby() {
 int main() {
   ManchesterBaby mb;
   mb.runBaby();
+  //mb.readFromFile("BabyTest1-MC.txt");
   return 0; //later return the output of mb.runBaby() (if there were errors)
 }

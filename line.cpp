@@ -6,16 +6,6 @@
 
 
 /*
-static void printVector2(vector<bool> * v) {
-	vector<bool>::iterator it;
-	for (it=v->begin(); it != v->end(); ++it) {
-		cout << *it << " " <<flush;
-	}
-	cout <<endl;
-	
-}
-*/
-/*
   converts an array of booleans (1's and 0's) to a decimal number (little-endian)
 */
 int binToDec(vector<bool> * bin)
@@ -138,13 +128,13 @@ void Line::setVector(vector<bool> *newVector) {
 }
 
 int Line::getDecInstruction(){
-	return binToDec(getInstruction());
+	return uBinToDec(getInstruction());
 }
 int Line::getDecOperand() {
-	return binToDec(getOperand());
+	return uBinToDec(getOperand());
 }
 int Line::getDecVector() {
-	return uBinToDec(getVector());
+	return binToDec(getVector());
 }
 void Line::setDecOperand(int decOperand) {
 	setOperand(decToUBin(decOperand));

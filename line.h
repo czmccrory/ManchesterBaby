@@ -8,7 +8,7 @@ using namespace std;
 const static int SIZE = 32;
 //void printVector(vector<bool>*);
 
-const static unsigned int operandWidth = 5, opcodeWidth = 3; 
+const static unsigned int operandWidth = 5, opcodeWidth = 4; 
 void printVector(vector<bool> * v);
 int uBinToDec(vector<bool> *bin);
 int binToDec(vector<bool> * bin);
@@ -21,7 +21,7 @@ private:
 public:
 	void print();
 	void printNoEndl();
-	
+
 	vector<bool> * getInstruction(); //get the opcode bools from the appropriate places //maybe not int
 	vector<bool> * getOperand(); //get the address bools from approptiate places in the array //maybe not int
 	vector<bool> * getVector();

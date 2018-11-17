@@ -75,7 +75,15 @@ class ManchesterBaby
 
       void add(int); // add content of store location to accumulator (A = A + S)
 
-      void cmp(); // increment CI if accumulator value <0 (if A < 0) { CI++ };
+      void negsto(int); // load store with negative contents of accumulator (S = -A)
+
+      void opsub(int); // subtract content of accumulator location from store (S = S - A)
+
+      void opmul(int); // multiplies content of accumulator location with store (S = S * A)
+
+      void opadd(int); // add content of accumulator location to store (S = S + A)
+
+      void cmp(); // increment CI if accumulator value < 0 (if A < 0) { CI++ };
 
       void stp(); // stop (halt the program)
 

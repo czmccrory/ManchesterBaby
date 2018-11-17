@@ -15,13 +15,14 @@ void printVector2(vector<bool> * v) {
   cout <<endl;
   
 }
+
 /*
-  converts an array of booleans (1's and 0's) to a decimal number (little-endian)
+  Converts an array of booleans (1's and 0's) to a decimal number (little-endian)
 */
 int binToDec(vector<bool> * bin)
 {
   bool negative = bin->back(); //1/true means negative, 0/false means positive
-  int length = bin->size();
+  //int length = bin->size();
   int decimal = 0;
 
    if (negative) {
@@ -42,10 +43,11 @@ int uBinToDec(vector<bool> *bin) {
 vector<bool>* decToBin(int dec)
 {
   vector<bool>* bin = new vector<bool>(32, 0); // vector to hold binary value (in this case size 8 for rule.)
-  for (int i=31; dec>0; i--)
   const size_t maxDec = pow(2,operandWidth-1); //we are using operandWidth-bit numbers
-   //with the last bit as the sign
   bool negative;
+
+  for (int i=31; dec>0; i--)
+   //with the last bit as the sign
   if (dec < 0) {
     negative = true;
   } else {
@@ -70,10 +72,16 @@ ManchesterBaby::ManchesterBaby() {
   store = Store(32,l);
 }
 
+/*
+  Increments CI
+*/
 void ManchesterBaby::incrementCI() {
   decCounter++;
 }
-//Fetches next instruction
+
+/*
+  Fetches next instruction
+*/
 void ManchesterBaby::fetch()
 {
   //CI (Control Instruction) points to memory address of the current line at the store
@@ -82,7 +90,6 @@ void ManchesterBaby::fetch()
   //PI (Present Instruction) is set to the current line of the store
   presentInstruction = store.at(decCounter);
 }
-
 
 /*
   Set the Control Instuction to what is in the store
@@ -132,7 +139,14 @@ void ManchesterBaby::ldn(int operand){
 void ManchesterBaby::sto(int operand){
   cout << "STO " << operand << endl;
 
-  store.at(operand) = accumulator;
+  //Get accumulator
+  vector<bool> *accumulatorValue = accumulator.getOperand();
+
+  //Convert to int
+  int accumulatorDec = binToDec(accumulatorValue);
+
+  //Convert back to binary and set as store operand
+  store.at(operand).setOperand(decToBin(accumulatorDec));
 }
 
 /*
@@ -165,10 +179,16 @@ void ManchesterBaby::sub(int operand){
 void ManchesterBaby::cmp(){
   //if(accumulator<0){controlInstruction=controlInstruction+1;}
   cout << "CMP " << endl;
+
+  //Get accumulator
   vector <bool> *accumulatorPtr = accumulator.getOperand();
+
+  //Convert to int
   int accumulatorValue = binToDec(accumulatorPtr);
+
+  //If value is less than 0
   if(accumulatorValue<0){
-    incrementCI();
+    incrementCI(); //Increment control instruction
   }
 }
 
@@ -202,6 +222,7 @@ void ManchesterBaby::mul(int operand) {
   //Perform calculation
   accumulatorDec = (accumulatorDec*storeDec);
 
+  //Convert back to binary and set as accumulator operand
   accumulator.setOperand(decToBin(accumulatorDec));
 }
 
@@ -228,7 +249,7 @@ void ManchesterBaby::add(int operand) {
   cout << "ADD" << operand << endl;
 
   //Get the operand value from the store and accumulator
-  vector<bool> *valueFromAccumulator = store.at(operand).getOperand();
+  vector<bool> *valueFromAccumulator = accumulator.getOperand();
   vector<bool> *valueFromStore = store.at(operand).getOperand();
 
   //Convert the binary number to a decimal number
@@ -238,16 +259,24 @@ void ManchesterBaby::add(int operand) {
   //Perform calculation
   accumulatorDec += storeDec;
 
+  //Convert back to binary and set as accumulator operand
   accumulator.setOperand(decToBin(accumulatorDec));
 }
 
 /*
   Set the store to the negative of the accumulator
 */
-void negsto(int operand) {
+void ManchesterBaby::negsto(int operand) {
   cout << "NegSto" << operand << endl;
 
-  store.at(operand) = -(accumulator);
+  //Get accumulator
+  vector<bool> *valueFromAccumulator = accumulator.getOperand();
+
+  //Convert to int
+  int accumulatorDec = binToDec(valueFromAccumulator);
+
+  //Convert negative of decimal to binary and set as store operand
+  store.at(operand).setOperand(decToBin(-accumulatorDec));
 }
 
 /*
@@ -268,7 +297,7 @@ void ManchesterBaby::opsub(int operand){
   storeDec -= accumulatorDec;
 
   //Convert back to binary and set as store operand
-  store.setOperand(decToBin(storeDec));
+  store.at(operand).setOperand(decToBin(storeDec));
 
 }
 
@@ -289,7 +318,8 @@ void ManchesterBaby::opmul(int operand) {
   //Perform calculation
   storeDec = (storeDec*accumulatorDec);
 
-  store.setOperand(decToBin(storeDec));
+  //Convert back to binary and set as store operand
+  store.at(operand).setOperand(decToBin(storeDec));
 }
 
 /*
@@ -309,14 +339,18 @@ void ManchesterBaby::opadd(int operand) {
   //Perform calculation
   storeDec += accumulatorDec;
 
-  store.setOperand(decToBin(storeDec));
+  //Convert back to binary and set as store operand
+  store.at(operand).setOperand(decToBin(storeDec));
 }
 
 /* 
   Extends hardware of Baby - more memory space 
 */
 void ManchesterBaby::extHWare() {
+  //Create new store size (double the size of the current store)
   int newStoreSize = 2*(store.size());
+
+  //Set as new store size
   store.resize(newStoreSize);
 }
 

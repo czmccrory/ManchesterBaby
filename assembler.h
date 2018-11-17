@@ -7,6 +7,7 @@
 
 using namespace std;
 
+string decToBinaryString(int dec, int length);
 
 class InstructionNode
 {
@@ -30,6 +31,7 @@ class InstructionSet
 	public:
 		InstructionSet();
 		int getOpcode(string mnemonic);
+		bool contains(string mnemonic);
 
 };
 
@@ -73,14 +75,22 @@ class Assembler
 	public:
 		Assembler(string path);
 		void assemble();
+		void assembleFirstPass();
+		void assembleSecondPass();
+
 		string parse(string* line);
+
 		string encodeInstruction(string mne ,string label);
 		string getOpcode(string mne);
-		void assembleLineFirstPass(string* line, int lineCounter);
-		void assembleLineSecondPass(string* line, int lineCounter);
+
+		void assembleLineFirstPass(string* line, int* lineCounter);
+		void assembleLineSecondPass(string* line, int* lineCounter, list<string>::iterator);
+
 		void addVariableToSymbolTable(string label, int address);
 		string declareVariable(int var);
+
 		void displayBuffer();
+		void flushBufferToFile();
 };
 
 
@@ -97,7 +107,7 @@ InstructionSet::InstructionSet()
 {
 	this -> size = 8;
 
-	string mne[8] = { "JMP", "JRP", "LDNA", "STO", "SUB", "SUB", "CMP", "STP"};
+	string mne[8] = { "JMP", "JRP", "LDN", "STO", "SUB", "SUB", "CMP", "STP"};
 	int num[8] = { 0, 1, 2, 3, 4, 5, 6, 7};
 
 	vector<InstructionNode> temp(8); 
@@ -111,6 +121,19 @@ InstructionSet::InstructionSet()
 
 
 }
+
+bool InstructionSet::contains(string mne)
+{
+	for (vector<InstructionNode>::iterator it = vec.begin(); it != vec.end(); ++it)
+	{
+		if ((*it).getMnemonic() == mne)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 
 int InstructionSet::getOpcode(string mne)
 {
@@ -214,7 +237,7 @@ string SymbolTable::getAddress(string label)
 	else
 	{
 		// return mem address 0 will be overwritten "later"
-		return "00000";
+		return "000000";
 	}
 
 }
@@ -222,4 +245,39 @@ string SymbolTable::getAddress(string label)
 SymbolTable::SymbolTable()
 {
 	this -> table = list<SymbolNode>();
+}
+
+
+string decToBinaryString(int dec, int length)
+{
+	string bin = ""; // vector to hold binary value (in this case size 8 for rule.)
+	cout << dec << endl;
+
+	int i;
+	for ( i=length; dec>0; i--)
+	{
+		// take the remainder of the dec / 2 and save it to the vector
+		// this value will always be 1 or 0
+		int mod = (dec%2);
+
+		if (mod == 1)
+		{
+			bin += "1";
+		}
+		else
+		{
+			bin += "0";
+		}
+
+		// update dec
+		dec /= 2;
+	}
+
+	for (i; i > 0; i--)
+	{
+		bin += "0";
+	}
+		cout << bin <<endl;
+		return bin;
+
 }

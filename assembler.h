@@ -113,6 +113,7 @@ InstructionSet::InstructionSet()
 	vector<InstructionNode> temp(11); 
 
 	for (int i = 0; i < 11; i++)
+    
 	{
 		temp.at(i) = InstructionNode(mne[i], num[i]);
 	}

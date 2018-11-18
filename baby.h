@@ -40,8 +40,9 @@ class ManchesterBaby
     ManchesterBaby(); //constructor
     void extHWare();
 
-    void menu();
 
+    void menu();
+  
     // runs the program
     void runBaby(int);
 
@@ -73,7 +74,8 @@ class ManchesterBaby
 
       void sub(int); // subtract content of store location from accumulator (A = A - S)
 
-      void mul(int); // multiplies content of store location with accumulator (A = A * S)
+      void cmp(); // increment CI if accumulator value <0 (if A < 0) { CI++ };
+
 
       //void posldn(int); // load accumulator with positive form of store (A = S)
       
@@ -113,6 +115,7 @@ class ManchesterBaby
       void imadd(int); // add content of store location to accumulator (A = A + S)
 
       void imnegsto(Line); // load store with negative contents of accumulator (S = -A)
+
 
     // prints the store
     void output();

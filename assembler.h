@@ -81,7 +81,8 @@ class Assembler
 
 		string parse(string* line);
 
-		string encodeInstruction(string mne ,string label);
+		string encodeInstructionAddress(string mne, string label);
+		string encodeInstructionValue(string mne, int value );
 		string getOpcode(string mne);
 
 		void assembleLineFirstPass(string* line, int* lineCounter);

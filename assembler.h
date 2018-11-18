@@ -61,6 +61,7 @@ class SymbolTable
 		void addAddress(string label, string address);
 		bool contains(string label);
 		string getAddress(string label);
+		void printTable();
 		//bool isComplete();
 };
 
@@ -81,8 +82,7 @@ class Assembler
 
 		string parse(string* line);
 
-		string encodeInstructionAddress(string mne, string label);
-		string encodeInstructionValue(string mne, int value );
+		string encodeInstruction(string mne ,string label);
 		string getOpcode(string mne);
 
 		void assembleLineFirstPass(string* line, int* lineCounter);
@@ -191,6 +191,18 @@ bool SymbolTable::contains(string label)
 	return false;
 }
 
+void SymbolTable::printTable()
+{
+	list<SymbolNode>::iterator it;
+
+	cout << "SYMBOL TABLE: " << endl;
+
+	for(it = table.begin(); it != table.end(); ++it)
+	{
+		cout << "Label: " << (*it).getLabel() << "\t Address: " << (*it).getAddress() << endl;
+	}
+}
+
 void SymbolTable::addLabel(string label)
 {
 	if(!contains(label))
@@ -269,7 +281,7 @@ SymbolTable::SymbolTable()
 string decToBinaryString(int dec, int length)
 {
 	string bin = ""; // vector to hold binary value (in this case size 8 for rule.)
-	cout << dec << endl;
+	//cout << dec << endl;
 
 	int i;
 	for ( i=length; dec>0; i--)
@@ -295,7 +307,7 @@ string decToBinaryString(int dec, int length)
 	{
 		bin += "0";
 	}
-		cout << bin <<endl;
+		//cout << bin <<endl;
 		return bin;
 
 }

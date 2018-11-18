@@ -734,8 +734,10 @@ void ManchesterBaby::output() {
 
 
 void ManchesterBaby::runBaby() {
-  readFromFile("BabyTest1-MC.txt");
-  //cout << "read from file successfully" <<endl;
+  string filename=getValidFile();
+  readFromFile(filename);
+  cin.ignore();
+  cin.clear();
 
     int instruction;
     char temp;
@@ -758,40 +760,80 @@ void ManchesterBaby::runBaby() {
     } while (instruction != 10 && temp == '\n'); //run until the decoded opcode is halt/stop
 }
 
-void ManchesterBaby::menu() {
-	/*
-  int choice;
+string ManchesterBaby::getValidFile(){
+  bool isValid=true;
+  //Initalise the variable
+  string filename="";
+ do{
+  //Display the files available to load
+  cout << "\nAvailable files to load: \n" << endl;
+  
+  //Display
+  system("ls | grep .txt | cat");
+   cout << "\nPlease enter the filename: " << endl;
+  
+  //Store the file name
+  cin >> filename;
+   // Add the file extention to the filename
+  //filename += ".txt";
+   //Initalise variable
+  ifstream infile;
+   //filename=filename+".txt";
+  //Open file
+  infile.open(filename, ios::in);
+   //Open the file to prove that it exists
+  if(infile.is_open() == 1)
+  {
+     // P0W how-to-detect-empty-file-in-c stackoverflow
+    // If file is empty 
+    if(infile.peek() == ifstream::traits_type::eof())
+    {
+       cout << "\nFILE IS EMPTY. " << endl;
+      isValid=false;
+      cin.clear();
+      cin.ignore();
+    }
+     // close file
+    infile.close();
+   }else{
+    cout << "\nError- The file ente does not exist" << endl;
+    cout << "Try again: " << endl;
+    isValid=false;
+    cin.clear();
+    cin.ignore();
+  }
+}while(isValid==false);
+ return filename;
+}
 
-  cout << "What addressing type (immediate or absolute) would you like? Choose the corresponding number for you choice.\n" << endl;
-  cout << "1. Absolute\n" << endl;
-  cout << "2. Immediate\n" << endl;
+void ManchesterBaby::menu() {
+  int choice;
+  bool isValid=true;
+  do{
+  cout << "Manchester Baby:\n" << endl;
+  cout << "1. Run Manchester Baby Simulation\n" << endl;
+  cout << "2. Change memory capacity\n" << endl;
+  cout << "3. Exit" <<endl;
   cin >> choice;
   if(choice == 1) {
-    runBaby(choice);
+    runBaby();
   } 
   else if(choice == 2) {
-    runBaby(choice);
-  } else {
+    extHWare();
+    runBaby();
+  }else if(choice ==3){
+    cout << "Exiting" <<endl;
+    exit(0);
+  }else {
+    cout<< "" <<endl;
     cout << "Please enter a valid value" << endl;
+    cin.clear();
+    cin.ignore();
+    isValid=false;
   }
-
-
-  int instruction;
-  char temp;
-  do {
-    incrementCI(); //increment program counter
-    fetch(); //get next line and save it to the PI
-    instruction = decodeInstruction(); //get the decimal opcode number
-    int operand = decodeOperand();
-    bool immAddressing = store.at(operand).isImmAddressing();
-    addressedExecute(instruction, operand, immAddressing);
-    //execute(instruction, operand); //execute the instruction
-    output(); //display the store, PI, CI, acucmulator
-    cin.get(temp);
-  } while (instruction != 7 && temp == '\n'); //run until the decoded opcode is halt/stop
-	*/
-	runBaby();
+  }while(isValid==false);
 }
+
 
 int main() {
   ManchesterBaby mb;

@@ -128,6 +128,7 @@ class ManchesterBaby
 
       void imnegsto(Line); // load store with negative contents of accumulator (S = -A)
 
+    string getValidFile();
 
     // prints the store
     void output();

@@ -90,8 +90,7 @@ void Assembler::assembleLineFirstPass(string* line, int* lineCounter)
 			cout << "Assembler Error: " << e.what() << endl;
 			exit(0);
 		}
-		
-		
+    
 		//cout << "Declare var" << endl;
 		bufferLine = declareVariable(var);
 		cout << "Machine Code: " << bufferLine << "\n" << endl;
@@ -398,7 +397,7 @@ string Assembler::parse(string* line)
 
 			(*line) = line->substr(whiteSpaceIndex, line->length() - whiteSpaceIndex);
 
-			cout << "returning parsed: "  << parsed << endl;
+			//cout << "returning parsed: "  << parsed << endl;
 			return parsed;
 		}
 		else
@@ -431,6 +430,7 @@ int main(int argc, char** argv)
 
 	 //Assembler assembler(argv[1]);
 	 Assembler assembler(argv[1]);
+  
 	 assembler.assemble();
 	 return 0;
 	

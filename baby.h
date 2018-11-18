@@ -1,15 +1,13 @@
 #ifndef _BABY_H_
 #define _BABY_H_
 
+
 using namespace std;
 
 /* define new types for readability */
 typedef vector<Line> Store; // 32 x 32 bit memory
 
 //enum Instruction {JMP, JRP, LDN, STO, SUB, CMP, STP}; //may later use these as constants
-
-
-
 
 void clrscr(); //clear the screen
 
@@ -34,10 +32,6 @@ class ManchesterBaby
 
     //int decCounter = 0;
     int instructionCounter = 0;
-
-    int storeSize = 32;
-
-    string presentMnemonic;
 
    // Line binCounter;
 
@@ -66,12 +60,8 @@ class ManchesterBaby
     // decodes the instruction (and fetches the operand if needed)
     int decodeInstruction(); // decodes Line into Opcode 
     int decodeOperand(); //+ operand (operand is a memory address)
-    bool decodeAddressingMode();
-
-    void addressedExecute(int, int, bool);
     // executes the given instruction (see tabbed bit below)
     void execute(int, int);
-
 
       // instruction set
 
@@ -87,21 +77,19 @@ class ManchesterBaby
 
       void cmp(); // increment CI if accumulator value <0 (if A < 0) { CI++ };
 
-      void mul(int);
 
       //void posldn(int); // load accumulator with positive form of store (A = S)
       
       void add(int); // add content of store location to accumulator (A = A + S)
       
       void negsto(int); // load store with negative contents of accumulator (S = -A)
-      
+
+      void mul(int);   
       // void opsub(int); // subtract content of accumulator location from store (S = S - A)
       
       // void opmul(int); // multiplies content of accumulator location with store (S = S * A)
       
       // void opadd(int); // add content of accumulator location to store (S = S + A)
-
-      //void cmp(); // increment CI if accumulator value <0 (if A < 0) { CI++ };
 
       void stp(); // stop (halt the program)
 
@@ -128,7 +116,7 @@ class ManchesterBaby
 
       void imnegsto(Line); // load store with negative contents of accumulator (S = -A)
 
-
+    string getValidFile();
     // prints the store
     void output();
 

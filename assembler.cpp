@@ -1,4 +1,5 @@
 #include "assembler.h"
+#include "assemblerError.h"
 
 using namespace std;
 
@@ -10,6 +11,8 @@ void Assembler::assemble()
 }
 void Assembler::assembleFirstPass()
 {
+	cout << "FIRST PASS:" << endl;
+
 	ifstream ifs(filePath);
 	int counter = 0;
 	int* lineCounter = &counter;
@@ -17,17 +20,27 @@ void Assembler::assembleFirstPass()
 
 	if (! ifs)
 	{
-		cerr << "error: invalid filename" << endl;
-		return;
+		//cerr << "error: invalid filename" << endl;
+		//return;
+		throw AssemblerException("Invalid filename");
 	}
 
-	while (getline(ifs, line))
+	try
 	{
-		string lineCopy = line;
-		string* linePtr = &lineCopy;
-		cout << "assembling line: " << line << endl;
-	 	assembleLineFirstPass(linePtr, lineCounter);
+		while (getline(ifs, line))
+		{
+			string lineCopy = line;
+			string* linePtr = &lineCopy;
+			cout << "assembling line: " << line << endl;
+		 	assembleLineFirstPass(linePtr, lineCounter);
+		}
 	}
+	catch (AssemblerException &e)
+	{
+		cout << "Assembler Error:" << e.what() << endl;
+		exit (0);
+	}
+	
 
 	//flushBufferToFile();
 	//push to buffer file
@@ -52,7 +65,7 @@ void Assembler::assembleLineFirstPass(string* line, int* lineCounter)
 	// if theres a "LABEL": add it to symbol table along with current line number as address
 	if (parsed.find(":") != string::npos)
 	{
-		cout << "Label found: " << parsed;
+		//cout << "Label found: " << parsed;
 		string label = parsed.substr(0, parsed.length()-1);
 
 		addVariableToSymbolTable(label, *lineCounter);
@@ -67,31 +80,60 @@ void Assembler::assembleLineFirstPass(string* line, int* lineCounter)
 	{
 		int var;
 		stringstream ss;
-		ss << parse(line);
-		ss >> var;
+		try 
+		{
+			ss << parse(line);
+			ss >> var;
+		}
+		catch (AssemblerException &e)
+		{
+			cout << "Assembler Error: " << e.what() << endl;
+			exit(0);
+		}
 		
-		cout << "Declare var" << endl;
+		
+		//cout << "Declare var" << endl;
 		bufferLine = declareVariable(var);
+		cout << "Machine Code: " << bufferLine << "\n" << endl;
 
-		cout << "pushed to buffer: " << bufferLine << endl;
+		//cout << "pushed to buffer: " << bufferLine << endl;
 		//buffer.push_back(bufferLine);
 		(*lineCounter)++;
-		cout << " past increment" << endl;
+		//cout << " past increment" << endl;
 
 	}
 	else if(iSet.contains(parsed))
 	{
-		cout << "encode Instruction" << endl;
-		cout << "parsed: " << parsed << endl;
-		bufferLine = encodeInstruction(parsed, parse(line));
+		//cout << "encode Instruction" << endl;
+		//cout << "parsed: " << parsed << endl;
+		if (parsed != "STP" && parsed != "CMP" && parsed != "INC" && parsed != "DEC")
+		{
+			try 
+			{
+				string instrOperand = parse(line);
+				if (instrOperand.find("#") == string::npos) // if direct addressing do nothing
+				{
+					bufferLine = encodeInstructionAddress(parsed, instrOperand);
+				}
+				cout << "Machine Code: " << bufferLine << "\n" << endl;
+			}
+			catch (AssemblerException &e)
+			{
+				cout << "Assembler Error: " << e.what() << endl;
+				exit(0);
+			}
+		}
+		
 
-		cout << "pushed to buffer: " << bufferLine << endl;
+		//cout << "pushed to buffer: " << bufferLine << endl;
 		//buffer.push_back(bufferLine);
 		(*lineCounter) = (*lineCounter + 1);
 	}
 	else
 	{
-	 	cout << "do nothing/ assumes MNE/ something is wrong" << endl;
+		throw AssemblerException("Unidentified Opcode, this Opcode is not part of the instruction set");
+		exit(0);
+	 	//cout << "do nothing/ assumes MNE/ something is wrong" << endl;
 	 	 // do nothing/dont add to buffer
 	 }
 
@@ -103,6 +145,10 @@ void Assembler::assembleLineFirstPass(string* line, int* lineCounter)
 
 void Assembler::assembleSecondPass()
 {
+	sTable.printTable();
+
+	cout << "\nSECOND PASS:" << endl;
+
 	ifstream ifs(filePath);
 	int counter = 0;
 	int* lineCounter = &counter;
@@ -143,14 +189,14 @@ void Assembler::assembleLineSecondPass(string* line, int* lineCounter, list<stri
 
 	if (parsed == "")
 	{
-		cout << "-1" << endl;
+		//cout << "-1" << endl;
 		return;
 	}
 
 	// if theres a "LABEL": add it to symbol table along with current line number as address
 	if (parsed.find(":") != string::npos)
 	{
-		cout << "Label found: " << parsed;
+		//cout << "Label found: " << parsed;
 		string label = parsed.substr(0, parsed.length()-1);
 
 		addVariableToSymbolTable(label, *lineCounter);
@@ -168,32 +214,84 @@ void Assembler::assembleLineSecondPass(string* line, int* lineCounter, list<stri
 		ss << parse(line);
 		ss >> var;
 		
-		cout << "Declare var" << endl;
+		//cout << "Declare var" << endl;
 		bufferLine = declareVariable(var);
 
-		cout << "overwritten buffer: " << bufferLine << endl;
+		//cout << "overwritten buffer: " << bufferLine << endl;
 		(*lineCounter)++;
 		it = buffer.insert(it, bufferLine);
+		cout << "Machine Code: " << *it << "\n" << endl;
 
-		cout << " past increment" << endl;
+		//cout << " past increment" << endl;
 
 	}
 	else if(iSet.contains(parsed))
 	{
-		cout << "encode Instruction" << endl;
-		cout << "parsed: " << parsed << endl;
-		bufferLine = encodeInstruction(parsed, parse(line));
+		//cout << "encode Instruction" << endl;
+		//cout << "parsed: " << parsed << endl;
+		if (parsed != "STP" && parsed != "CMP" && parsed != "INC" && parsed != "DEC")
+		{
+			string instrOperand = parse(line);
+			if (instrOperand.find("#") == string::npos) // absolute addressing (mem address)
+			{
+				bufferLine = encodeInstructionAddress(parsed, instrOperand);
+			}
+			else //direct addressing (#value)
+			{
+				int value;
+				stringstream ss;
+				// remove #
+				instrOperand = instrOperand.substr(1, instrOperand.length() - 1); 
+				//convert to int
+				ss << instrOperand;
+				ss >> value;
+				// encode
+				bufferLine = encodeInstructionValue(parsed, value);
+			}
+		}
+		else 
+		{
+			bufferLine = encodeInstructionAddress(parsed, "");
+		}
 
-		cout << "overwritten buffer: " << bufferLine << endl;
+		//cout << "overwritten buffer: " << bufferLine << endl;
 		(*lineCounter) = (*lineCounter + 1);
 
 		it = buffer.insert(it, bufferLine);
+		cout << "Machine Code: " << *it << "\n" << endl;
 
  	}
  	else
  	{
  		cout << "error possible says this twice" << endl;
  	}
+}
+
+string Assembler::encodeInstructionValue(string mne, int value)
+{
+	//get opcode (make it a binary string)
+	string opcode = getOpcode(mne);
+	cout << "mne: " << mne << " -> opcode: " << opcode << endl;
+	//get memory address of operand
+	string operand = decToBinaryString(value, 6);
+	cout << "operand: " << operand << endl;
+	//initialises templine to be 32 0s
+	string tempLine = "";
+	for (int i = 0; i < 32; i++)
+	{
+		tempLine += "0";
+	}
+	//cout << "templines: " <<endl;
+	//cout << tempLine << endl;
+	// 6 for 64x32 store
+	// 4 for 4 bit opcode (0-15)
+	tempLine.replace(0, 6, operand);
+	//cout << tempLine << endl;
+	tempLine.replace(13, 4, opcode);
+	tempLine.replace(31,1, "1");
+	//cout <<tempLine << endl;
+	//cout << "end of temp lines" << endl;
+	return tempLine;
 }
 
 string Assembler::declareVariable(int value)
@@ -225,22 +323,22 @@ string Assembler::getOpcode(string mne)
 	// convert to 4 bit binary string and return
 	string strOpcode = decToBinaryString(opCodeInt, 4);
 
-	cout << "intOpCode: " << opCodeInt << " string: " << strOpcode << endl;
+	//cout << "intOpCode: " << opCodeInt << " string: " << strOpcode << endl;
 
 	return strOpcode;
 }
 
-string Assembler::encodeInstruction(string mne, string label)
+string Assembler::encodeInstructionAddress(string mne, string label)
 {
 	//get opcode (make it a binary string)
 	string opcode = getOpcode(mne);
 
-	cout << "mne: " << mne << " -> opcode: " << opcode << endl;
+	//cout << "mne: " << mne << " -> opcode: " << opcode << endl;
 
 	//get memory address of operand
 	string operand = sTable.getAddress(label);
 
-	cout << "operand: " << operand << endl;
+	//cout << "operand: " << operand << endl;
 
 	//initialises templine to be 32 0s
 	string tempLine = "";
@@ -249,16 +347,16 @@ string Assembler::encodeInstruction(string mne, string label)
 		tempLine += "0";
 	}
 
-	cout << "templines: " <<endl;
-	cout << tempLine << endl;
+	//cout << "templines: " <<endl;
+	//cout << tempLine << endl;
 	// 6 for 64x32 store
 	// 4 for 4 bit opcode (0-15)
 	tempLine.replace(0, 6, operand);
 
-	cout << tempLine << endl;
+	//cout << tempLine << endl;
 	tempLine.replace(13, 4, opcode);
-	cout <<tempLine << endl;
-	cout << "end of temp lines" << endl;
+	//cout <<tempLine << endl;
+	//cout << "end of temp lines" << endl;
 
 	return tempLine;
 
@@ -289,7 +387,7 @@ string Assembler::parse(string* line)
 		size_t firstIndex = line->find_first_not_of(" ");
 		(*line) = line->substr(firstIndex, line->length() - firstIndex);
 
-		cout << (*line) << endl;
+		//cout << (*line) << endl;
 
 		// 2 cases being there is a space, word is end of line
 		if(line->find(" ") != string::npos)
@@ -311,8 +409,10 @@ string Assembler::parse(string* line)
 			return parsed;
 
 		}
-
 	}
+
+	//throw AssemblerException("Opcode requiring operand with no operand");
+	return "";
 }
 
 
@@ -321,6 +421,7 @@ string Assembler::parse(string* line)
 */
 
 int main(int argc, char** argv)
+//int main()
 {
 	if (argc != 2)
 	{
@@ -328,22 +429,22 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
+	 //Assembler assembler(argv[1]);
 	 Assembler assembler(argv[1]);
 	 assembler.assemble();
 	 return 0;
 	
-	
 }
 
-void Assembler::displayBuffer()
-{
-	list<string>::iterator it;
+// void Assembler::displayBuffer()
+// {
+// 	list<string>::iterator it;
 
-	for(it = buffer.begin(); it != buffer.end(); ++it)
-	{
-		cout << (*it) << endl;
-	}
-}
+// 	for(it = buffer.begin(); it != buffer.end(); ++it)
+// 	{
+// 		//cout << (*it) << endl;
+// 	}
+// }
 
 void Assembler::flushBufferToFile()
 {

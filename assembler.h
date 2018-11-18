@@ -61,6 +61,8 @@ class SymbolTable
 		void addAddress(string label, string address);
 		bool contains(string label);
 		string getAddress(string label);
+		void printTable();
+		//bool isComplete();
 };
 
 
@@ -80,7 +82,8 @@ class Assembler
 
 		string parse(string* line);
 
-		string encodeInstruction(string mne ,string label);
+		string encodeInstructionAddress(string mne, string label);
+		string encodeInstructionValue(string mne, int value );
 		string getOpcode(string mne);
 
 		void assembleLineFirstPass(string* line, int* lineCounter);
@@ -105,20 +108,21 @@ Assembler::Assembler(string path)
 
 InstructionSet::InstructionSet()
 {
-	this -> size = 11;
+	this -> size = 14;
 
-	string mne[11] = { "JMP", "JRP", "LDN", "STO", "SUB", "SUB", "MUL", "ADD", "NEGSTO", "CMP", "STP" };
-	int num[11] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+	string mne[14] = { "JMP", "JRP", "LDN", "STO", "SUB", "SUB", "CMP", "STP", "MUL", "LDP", "ADD", "NEGSTO", "INC", "DEC"};
+	int num[14] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
 
-	vector<InstructionNode> temp(11); 
+	vector<InstructionNode> temp(14); 
 
-	for (int i = 0; i < 11; i++)
-    
+	for (int i = 0; i < 14; i++)
 	{
 		temp.at(i) = InstructionNode(mne[i], num[i]);
 	}
 
 	this -> vec = temp;
+
+
 }
 
 bool InstructionSet::contains(string mne)
@@ -188,6 +192,18 @@ bool SymbolTable::contains(string label)
 	return false;
 }
 
+void SymbolTable::printTable()
+{
+	list<SymbolNode>::iterator it;
+
+	cout << "SYMBOL TABLE: " << endl;
+
+	for(it = table.begin(); it != table.end(); ++it)
+	{
+		cout << "Label: " << (*it).getLabel() << "\t Address: " << (*it).getAddress() << endl;
+	}
+}
+
 void SymbolTable::addLabel(string label)
 {
 	if(!contains(label))
@@ -241,6 +257,22 @@ string SymbolTable::getAddress(string label)
 
 }
 
+// bool SymbolTable::isComplete()
+// {
+// 	list<SymbolNode>::iterator it;
+
+// 	for(it = table.begin(); it != table.end(); ++it)
+// 	{
+// 		if((*it).getAddress() == "000000")
+// 		{
+// 			//Return false if memory address remains at default
+// 			return false;
+// 		}
+// 	}
+
+// 	return true;
+// }
+
 SymbolTable::SymbolTable()
 {
 	this -> table = list<SymbolNode>();
@@ -250,7 +282,7 @@ SymbolTable::SymbolTable()
 string decToBinaryString(int dec, int length)
 {
 	string bin = ""; // vector to hold binary value (in this case size 8 for rule.)
-	cout << dec << endl;
+	//cout << dec << endl;
 
 	int i;
 	for ( i=length; dec>0; i--)
@@ -276,7 +308,7 @@ string decToBinaryString(int dec, int length)
 	{
 		bin += "0";
 	}
-		cout << bin <<endl;
+		//cout << bin <<endl;
 		return bin;
 
 }

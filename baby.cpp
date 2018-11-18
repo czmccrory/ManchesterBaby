@@ -8,58 +8,39 @@ using namespace std;
 
 ManchesterBaby::ManchesterBaby() {
 	Line l;
-	store = Store(32,l);
+	store = Store(storeSize,l);
 }
 
 void ManchesterBaby::incrementCI() {
   instructionCounter++;
- // binCounter.setOperand(decToBin(decCounter));
- // binCounter.setDecOperand(decCounter);
 }
 
 //Fetches next instruction
 void ManchesterBaby::fetch()
 {
-  //CI (Control Instruction) points to memory address of the current line at the store
- // controlInstruction = binCounter;
   //PI (Present Instruction) is set to the current line of the store
   presentInstruction = store.at(instructionCounter);
 }
 
-/*
-void ManchesterBaby::updateCI(){
-  controlInstruction = Line();
-  controlInstruction.setDecOperand(decCounter);
-}
-*/
 
 /*
   Set the Control Instuction to what is in the store
 */
 void ManchesterBaby::jmp(int operand){
-
-  cout << "JMP " << operand << endl;
-  //Get the operand from the store
- // vector <bool> *ci= store.at(operand).getOperand();
-  //Set the counter t the operand
- // decCounter=binToDec(ci);
+	presentMnemonic = "JMP " + to_string(operand);
+  //Set instruction counter to the operand at the address
   instructionCounter = store.at(operand).getDecOperand();
-  //updateCI();
 }
 
 /*
   Set the Control Instuction to what is in the store
 */
 void ManchesterBaby::imjmp(int operand){
-  cout << "IMJMP " << operand << endl;
-  
-  //Get the operand from the store
- // vector <bool> *ci= store.at(operand).getOperand();
-  //Set the counter t the operand
- // decCounter=binToDec(ci);
+
+	presentMnemonic = "IMJMP " + to_string(operand);
+  //Set the counter to the operand
 
   instructionCounter = operand;
-  //updateCI();
 }
 
 
@@ -67,31 +48,20 @@ void ManchesterBaby::imjmp(int operand){
   Add the Store to the Control Inctruction
 */
 void ManchesterBaby::jrp(int operand){
-  cout << "JRP " <<operand <<endl;
-  
-  //Get the operand from the store
-//  vector <bool> *ci= store.at(operand).getOperand();
 
+	presentMnemonic = "JRP " + to_string(operand);
   //Add the operands to the control instruction
-//  decCounter+=binToDec(ci);
-
   instructionCounter += store.at(operand).getDecOperand();
-	//updateCI();
 }
 
 /*
   Add the Store to the Control Inctruction
 */
 void ManchesterBaby::imjrp(int operand){
-  cout << "IMJRP " << operand << endl;
-  
-  //Get the operand from the store
-//  vector <bool> *ci= store.at(operand).getOperand();
+	presentMnemonic = "IMJRP " + to_string(operand);
   //Add the operands to the control instruction
-//  decCounter+=binToDec(ci);
 
     instructionCounter += operand;
-  //updateCI();
 }
 
 /*
@@ -99,16 +69,11 @@ void ManchesterBaby::imjrp(int operand){
 */
 void ManchesterBaby::ldn(int operand){
 
-  cout << "LDN " << operand << endl;
-  
-  //Get the operand valye from the store
-  //vector<bool> *valueFromStore= store.at(operand).getOperand();
-  //COnvert the binary number to a decimal number and make it negative
-  //int negativeValue= -(binToDec(valueFromStore));
+	presentMnemonic = "LDN " + to_string(operand);
+  //Get the value at the store
   int negativeValue = store.at(operand).getDecVector();
-  cout << negativeValue << endl;
+  //make it negative
   negativeValue = -negativeValue;
-  cout << negativeValue << endl;
   //Add set the accumulator to the negative operand
   accumulator.setDecVector(negativeValue);
 }
@@ -117,7 +82,8 @@ void ManchesterBaby::ldn(int operand){
   Get a value from the store and make the negative of that value and store it in the accumulator
 */
 void ManchesterBaby::imldn(int operand){
-  cout << "IMLDN " << operand << endl;
+	presentMnemonic = "IMLDN " + to_string(operand);
+  //cout << "IMLDN " << operand << endl;
   //Get the operand valye from the store
   //vector<bool> *valueFromStore= store.at(operand).getOperand();
   //COnvert the binary number to a decimal number and make it negative
@@ -132,7 +98,8 @@ void ManchesterBaby::imldn(int operand){
   Set the store to the accumulator
 */
 void ManchesterBaby::sto(int operand){
-  cout << "STO" << operand << endl;
+	presentMnemonic = "STO " + to_string(operand);
+  //cout << "STO" << operand << endl;
   store.at(operand) = accumulator;
 }
 
@@ -140,7 +107,8 @@ void ManchesterBaby::sto(int operand){
   Set the store to the accumulator
 */
 void ManchesterBaby::imsto(Line value){
-  cout << "imSTO" << value.getDecOperand() << endl;
+  //cout << "imSTO" << value.getDecOperand() << endl;
+	presentMnemonic = "IMSTO " + to_string(value.getDecOperand());
   value = accumulator;
 }
 
@@ -148,17 +116,19 @@ void ManchesterBaby::imsto(Line value){
   Subtract the store from the accumulator
 */
 void ManchesterBaby::sub(int operand){
-  cout << "SUB " << operand << endl;
+
+	presentMnemonic = "SUB " + to_string(operand);
+  //cout << "SUB " << operand << endl;
  
   //Get the accumulator
   // vector <bool> *accumulatorPtr=accumulator.getOperand();
   int accumulatorDec = accumulator.getDecVector();
-  cout << accumulatorDec << endl;
+  //cout << accumulatorDec << endl;
 
   //Get the Store operand
   //vector<bool> *storePtr= store.at(operand).getOperand();
   int storeDec = store.at(operand).getDecVector(); 
-  cout << storeDec << endl;
+  //cout << storeDec << endl;
 
   //Convert to int
   //int accumulatorDec= binToDec(accumulatorPtr);
@@ -168,7 +138,7 @@ void ManchesterBaby::sub(int operand){
 
   int result = accumulatorDec- storeDec;
 
-  cout << result << endl;
+  //cout << result << endl;
 
   //accumulator.setOperand(decToBin(accumulatorDec));
   accumulator.setDecVector(result);
@@ -179,7 +149,9 @@ void ManchesterBaby::sub(int operand){
   Subtract the store from the accumulator
 */
 void ManchesterBaby::imsub(int operand){
-  cout << "IMSUB " << operand << endl;
+
+	presentMnemonic = "IMSUB " + to_string(operand);
+  //cout << "IMSUB " << operand << endl;
  
   //Get the accumulator
   //vector <bool> *accumulatorPtr=accumulator.getOperand();
@@ -201,7 +173,9 @@ void ManchesterBaby::imsub(int operand){
   Add one to the control instruction if the accumulator is negative
 */
 void ManchesterBaby::cmp(){
-  cout << "CMP " << endl;
+
+	presentMnemonic = "CMP ";
+  //cout << "CMP " << endl;
   //vector <bool> *accumulatorPtr=accumulator.getOperand();
   //int accumulatorValue= binToDec(accumulatorPtr);
   int accumulatorValue = accumulator.getDecVector();
@@ -214,8 +188,10 @@ void ManchesterBaby::cmp(){
   Halts the operation
 */
 void ManchesterBaby::stp(){
+
+	presentMnemonic = "STP ";
   stopLamp = true;
-  cout << "STP " << endl;
+  //cout << "STP " << endl;
  // exit(0);
 }
 
@@ -227,8 +203,9 @@ void ManchesterBaby::stp(){
   Multiplies accumulator and store
 */
 void ManchesterBaby::mul(int operand) {
-  cout << "MUL" << operand << endl;
+  //cout << "MUL" << operand << endl;
 
+	presentMnemonic = "MUL " + to_string(operand);
 /*
   //Get accumulator
   vector<bool> *accumulatorPtr = accumulator.getOperand();
@@ -245,7 +222,7 @@ void ManchesterBaby::mul(int operand) {
 
   //Convert back to binary and set as accumulator operand
   accumulator.setOperand(decToBin(accumulatorDec));
-
+*/
 	int accumulatorDec = accumulator.getDecVector();
 	int storeDec = store.at(operand).getDecVector();
 	int result = accumulatorDec * storeDec;
@@ -257,8 +234,9 @@ void ManchesterBaby::mul(int operand) {
   Multiplies accumulator and store
 */
 void ManchesterBaby::immul(int operand) {
-  cout << "IMMUL" << operand << endl;
+  //cout << "IMMUL" << operand << endl;
 
+	presentMnemonic = "IMMUL " + to_string(operand);
 /*
   //Get accumulator
   vector<bool> *accumulatorPtr = accumulator.getOperand();
@@ -306,8 +284,10 @@ void ManchesterBaby::immul(int operand) {
   Get a value from the store and store it in the accumulator
 */
 void ManchesterBaby::imposldn(int operand){
-  cout << "IMPOSLDN " << operand << endl;
+ // cout << "IMPOSLDN " << operand << endl;
 
+
+	presentMnemonic = "IMPOSLDN " + to_string(operand);
 /*
   //Get the operand value from the store
   vector<bool> *valueFromStore = store.at(operand).getOperand();
@@ -326,8 +306,9 @@ void ManchesterBaby::imposldn(int operand){
   Add content of store to accumulator
 */
 void ManchesterBaby::add(int operand) {
-  cout << "ADD" << operand << endl;
+  //cout << "ADD" << operand << endl;
 
+	presentMnemonic = "ADD " + to_string(operand);
 /*
   //Get the operand value from the store and accumulator
   vector<bool> *valueFromAccumulator = accumulator.getOperand();
@@ -353,8 +334,9 @@ void ManchesterBaby::add(int operand) {
 }
 
 void ManchesterBaby::imadd(int operand) {
-  cout << "IMADD" << operand << endl;
+  //cout << "IMADD" << operand << endl;
 
+	presentMnemonic = "IMADD " + to_string(operand);
 /*
 
   //Get the operand value from the store and accumulator
@@ -384,8 +366,9 @@ void ManchesterBaby::imadd(int operand) {
   Set the store to the negative of the accumulator
 */
 void ManchesterBaby::negsto(int operand) {
-  cout << "NEGSTO " << operand << endl;
+  //cout << "NEGSTO " << operand << endl;
 
+	presentMnemonic = "NEGSTO " + to_string(operand);
 /*
   //Get accumulator
   vector<bool> *valueFromAccumulator = accumulator.getOperand();
@@ -414,8 +397,9 @@ void ManchesterBaby::negsto(int operand) {
   Set the store to the negative of the accumulator
 */
 void ManchesterBaby::imnegsto(Line value) {
-  cout << "IMNEGSTO " << value.getDecOperand() << endl;
+  //cout << "IMNEGSTO " << value.getDecOperand() << endl;
 
+	presentMnemonic = "IMNEGSTO " + to_string(value.getDecOperand());
 /*
   //Get accumulator
   vector<bool> *valueFromAccumulator = accumulator.getOperand();
@@ -539,23 +523,15 @@ int decVar(int var) {
 
 
 int ManchesterBaby::decodeInstruction() {
-	/*
-  vector <bool> * ins = presentInstruction.getInstruction();
-  int ret = uBinToDec(ins);
-  delete ins;
-  return ret;
-  */
 	return presentInstruction.getDecInstruction();
 }
 
 int ManchesterBaby::decodeOperand(){
-	/*
-  vector <bool> * operand = presentInstruction.getOperand();
-  int ret = binToDec(operand);
-  delete operand;
-  return ret;
-  */
 	return presentInstruction.getDecOperand();
+}
+
+bool ManchesterBaby::decodeAddressingMode(){
+	return presentInstruction.isImmAddressing();
 }
 
 
@@ -687,6 +663,14 @@ void ManchesterBaby::immediateEx(int opcode, int operand){
   }
 }
 
+void ManchesterBaby::addressedExecute(int opcode, int operand, bool immAddressing) {
+	if (immAddressing){
+		immediateEx(opcode, operand);
+	} else {
+		execute(opcode, operand);
+	}
+}
+
 void ManchesterBaby::readFromFile(string path){
   ifstream file (path);
   if(file){
@@ -695,6 +679,7 @@ void ManchesterBaby::readFromFile(string path){
     while (getline(file, l)) {
       Line myline(l);
       store.at(i) = myline;
+      //store.push_back(myline);
       i++;
     }
   }
@@ -720,28 +705,35 @@ void ManchesterBaby::output() {
   for (size_t i = 0; i < store.size(); ++i)
   {
     //Print line
+    cout << i << '\t';// << flush;
     store.at(i).print();
   }
 
   cout <<""<<endl;
-  cout<< "Present Instruction" <<endl;
-  presentInstruction.print();
+  cout<< "Present Instruction" << "\n\t";
+  presentInstruction.printNoEndl();
+  cout << '\t' << presentMnemonic << endl;
 
   cout << "" <<endl;
-  cout << "Control Instruction" <<endl;
+  cout << "Control Instruction" <<"\n\t";
   Line ci;
   ci.setDecVector(instructionCounter);
   ci.printNoEndl();
   cout << '\t' <<  ci.getDecVector() <<endl;
 
   cout << "" <<endl;
-  cout << "Accumulator" <<endl;
+  cout << "Accumulator" <<"\n\t";
   accumulator.printNoEndl();
   cout << '\t' <<  accumulator.getDecVector() <<endl;
+  cout << "\nPress enter to see the next cycle, or input any other key to exit." <<endl;
+
+  if (stopLamp) {
+  	cout << "STOP. END OF PROGRAM REACHED." << endl;
+  }
 }
 
 
-void ManchesterBaby::runBaby(int choice) {
+void ManchesterBaby::runBaby() {
   readFromFile("BabyTest1-MC.txt");
   //cout << "read from file successfully" <<endl;
 
@@ -752,17 +744,22 @@ void ManchesterBaby::runBaby(int choice) {
       fetch(); //get next line and save it to the PI
       instruction = decodeInstruction(); //get the decimal opcode number
       int operand = decodeOperand();
+	  bool immAddressing = decodeAddressingMode();
+      /*
       if(choice == 1) {
         execute(instruction, operand); //execute the instruction
       } else {
         immediateEx(instruction, operand); //execute the instruction
       }
+      */
+      addressedExecute(instruction, operand, immAddressing);
       output(); //display the store, PI, CI, acucmulator
       cin.get(temp);
     } while (instruction != 10 && temp == '\n'); //run until the decoded opcode is halt/stop
 }
 
 void ManchesterBaby::menu() {
+	/*
   int choice;
 
   cout << "What addressing type (immediate or absolute) would you like? Choose the corresponding number for you choice.\n" << endl;
@@ -778,6 +775,7 @@ void ManchesterBaby::menu() {
     cout << "Please enter a valid value" << endl;
   }
 
+
   int instruction;
   char temp;
   do {
@@ -785,11 +783,14 @@ void ManchesterBaby::menu() {
     fetch(); //get next line and save it to the PI
     instruction = decodeInstruction(); //get the decimal opcode number
     int operand = decodeOperand();
-    execute(instruction, operand); //execute the instruction
+    bool immAddressing = store.at(operand).isImmAddressing();
+    addressedExecute(instruction, operand, immAddressing);
+    //execute(instruction, operand); //execute the instruction
     output(); //display the store, PI, CI, acucmulator
     cin.get(temp);
   } while (instruction != 7 && temp == '\n'); //run until the decoded opcode is halt/stop
-
+	*/
+	runBaby();
 }
 
 int main() {

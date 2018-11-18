@@ -8,6 +8,9 @@ typedef vector<Line> Store; // 32 x 32 bit memory
 
 //enum Instruction {JMP, JRP, LDN, STO, SUB, CMP, STP}; //may later use these as constants
 
+
+
+
 void clrscr(); //clear the screen
 
 int decodeOperand(); // operand (operand is a memory address)
@@ -32,6 +35,10 @@ class ManchesterBaby
     //int decCounter = 0;
     int instructionCounter = 0;
 
+    int storeSize = 32;
+
+    string presentMnemonic;
+
    // Line binCounter;
 
     bool stopLamp = false;
@@ -44,7 +51,7 @@ class ManchesterBaby
     void menu();
   
     // runs the program
-    void runBaby(int);
+    void runBaby();
 
     // Takes in a 32x32 machine code file and places it into the store
     void readFromFile(string);
@@ -59,8 +66,12 @@ class ManchesterBaby
     // decodes the instruction (and fetches the operand if needed)
     int decodeInstruction(); // decodes Line into Opcode 
     int decodeOperand(); //+ operand (operand is a memory address)
+    bool decodeAddressingMode();
+
+    void addressedExecute(int, int, bool);
     // executes the given instruction (see tabbed bit below)
     void execute(int, int);
+
 
       // instruction set
 
@@ -76,6 +87,7 @@ class ManchesterBaby
 
       void cmp(); // increment CI if accumulator value <0 (if A < 0) { CI++ };
 
+      void mul(int);
 
       //void posldn(int); // load accumulator with positive form of store (A = S)
       
@@ -89,7 +101,7 @@ class ManchesterBaby
       
       // void opadd(int); // add content of accumulator location to store (S = S + A)
 
-      void cmp(); // increment CI if accumulator value <0 (if A < 0) { CI++ };
+      //void cmp(); // increment CI if accumulator value <0 (if A < 0) { CI++ };
 
       void stp(); // stop (halt the program)
 

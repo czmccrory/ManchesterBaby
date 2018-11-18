@@ -145,6 +145,9 @@ void Line::setDecVector(int decNumber){
 	setVector(decToBin(decNumber));
 }
 
+bool Line::isImmAddressing() {
+	return line->at(SIZE-1);
+}
 
 
 

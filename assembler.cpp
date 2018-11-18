@@ -106,11 +106,15 @@ void Assembler::assembleLineFirstPass(string* line, int* lineCounter)
 	{
 		//cout << "encode Instruction" << endl;
 		//cout << "parsed: " << parsed << endl;
-		if (parsed != "STP")
+		if (parsed != "STP" && parsed != "CMP")
 		{
 			try 
 			{
-				bufferLine = encodeInstruction(parsed, parse(line));
+				string instrOperand = parse(line);
+				if (instrOperand.find("#") == string::npos) // if direct addressing do nothing
+				{
+					bufferLine = encodeInstructionAddress(parsed, instrOperand);
+				}
 				cout << "Machine Code: " << bufferLine << "\n" << endl;
 			}
 			catch (AssemblerException &e)
@@ -225,13 +229,29 @@ void Assembler::assembleLineSecondPass(string* line, int* lineCounter, list<stri
 	{
 		//cout << "encode Instruction" << endl;
 		//cout << "parsed: " << parsed << endl;
-		if (parsed != "STP")
+		if (parsed != "STP" && parsed != "CMP")
 		{
-			bufferLine = encodeInstruction(parsed, parse(line));
+			string instrOperand = parse(line);
+			if (instrOperand.find("#") == string::npos) // absolute addressing (mem address)
+			{
+				bufferLine = encodeInstructionAddress(parsed, instrOperand);
+			}
+			else //direct addressing (#value)
+			{
+				int value;
+				stringstream ss;
+				// remove #
+				instrOperand = instrOperand.substr(1, instrOperand.length() - 1); 
+				//convert to int
+				ss << instrOperand;
+				ss >> value;
+				// encode
+				bufferLine = encodeInstructionValue(parsed, value);
+			}
 		}
 		else 
 		{
-			bufferLine = encodeInstruction(parsed, "");
+			bufferLine = encodeInstructionAddress(parsed, "");
 		}
 
 		//cout << "overwritten buffer: " << bufferLine << endl;
@@ -245,6 +265,33 @@ void Assembler::assembleLineSecondPass(string* line, int* lineCounter, list<stri
  	{
  		cout << "error possible says this twice" << endl;
  	}
+}
+
+string Assembler::encodeInstructionValue(string mne, int value)
+{
+	//get opcode (make it a binary string)
+	string opcode = getOpcode(mne);
+	cout << "mne: " << mne << " -> opcode: " << opcode << endl;
+	//get memory address of operand
+	string operand = decToBinaryString(value, 6);
+	cout << "operand: " << operand << endl;
+	//initialises templine to be 32 0s
+	string tempLine = "";
+	for (int i = 0; i < 32; i++)
+	{
+		tempLine += "0";
+	}
+	//cout << "templines: " <<endl;
+	//cout << tempLine << endl;
+	// 6 for 64x32 store
+	// 4 for 4 bit opcode (0-15)
+	tempLine.replace(0, 6, operand);
+	//cout << tempLine << endl;
+	tempLine.replace(13, 4, opcode);
+	tempLine.replace(31,1, "1");
+	//cout <<tempLine << endl;
+	//cout << "end of temp lines" << endl;
+	return tempLine;
 }
 
 string Assembler::declareVariable(int value)
@@ -281,7 +328,7 @@ string Assembler::getOpcode(string mne)
 	return strOpcode;
 }
 
-string Assembler::encodeInstruction(string mne, string label)
+string Assembler::encodeInstructionAddress(string mne, string label)
 {
 	//get opcode (make it a binary string)
 	string opcode = getOpcode(mne);

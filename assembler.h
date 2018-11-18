@@ -82,7 +82,8 @@ class Assembler
 
 		string parse(string* line);
 
-		string encodeInstruction(string mne ,string label);
+		string encodeInstructionAddress(string mne, string label);
+		string encodeInstructionValue(string mne, int value );
 		string getOpcode(string mne);
 
 		void assembleLineFirstPass(string* line, int* lineCounter);
@@ -107,14 +108,14 @@ Assembler::Assembler(string path)
 
 InstructionSet::InstructionSet()
 {
-	this -> size = 8;
+	this -> size = 11;
 
-	string mne[8] = { "JMP", "JRP", "LDN", "STO", "SUB", "SUB", "CMP", "STP"};
-	int num[8] = { 0, 1, 2, 3, 4, 5, 6, 7};
+	string mne[size] = { "JMP", "JRP", "LDN", "STO", "SUB", "SUB", "CMP", "STP", "MUL", "LDP", "ADD", "NEGSTO"};
+	int num[size] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
-	vector<InstructionNode> temp(8); 
+	vector<InstructionNode> temp(size); 
 
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < size; i++)
 	{
 		temp.at(i) = InstructionNode(mne[i], num[i]);
 	}

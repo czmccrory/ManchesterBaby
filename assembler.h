@@ -108,14 +108,15 @@ Assembler::Assembler(string path)
 
 InstructionSet::InstructionSet()
 {
-	this -> size = 11;
+	this -> size = 14;
+  
+	string mne[14] = { "JMP", "JRP", "LDN", "STO", "SUB", "SUB", "CMP", "STP", "MUL", "LDP", "ADD", "NEGSTO", "INC", "DEC"};
+	int num[14] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
 
-	string mne[size] = { "JMP", "JRP", "LDN", "STO", "SUB", "SUB", "CMP", "STP", "MUL", "LDP", "ADD", "NEGSTO"};
-	int num[size] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+	vector<InstructionNode> temp(14); 
 
-	vector<InstructionNode> temp(size); 
-
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < 14; i++)
+; i < size; i++)
 	{
 		temp.at(i) = InstructionNode(mne[i], num[i]);
 	}

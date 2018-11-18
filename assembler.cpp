@@ -90,8 +90,7 @@ void Assembler::assembleLineFirstPass(string* line, int* lineCounter)
 			cout << "Assembler Error: " << e.what() << endl;
 			exit(0);
 		}
-		
-		
+    
 		//cout << "Declare var" << endl;
 		bufferLine = declareVariable(var);
 		cout << "Machine Code: " << bufferLine << "\n" << endl;
@@ -106,7 +105,7 @@ void Assembler::assembleLineFirstPass(string* line, int* lineCounter)
 	{
 		//cout << "encode Instruction" << endl;
 		//cout << "parsed: " << parsed << endl;
-		if (parsed != "STP" && parsed != "CMP")
+		if (parsed != "STP" && parsed != "CMP" && parsed != "INC" && parsed != "DEC")
 		{
 			try 
 			{
@@ -229,7 +228,7 @@ void Assembler::assembleLineSecondPass(string* line, int* lineCounter, list<stri
 	{
 		//cout << "encode Instruction" << endl;
 		//cout << "parsed: " << parsed << endl;
-		if (parsed != "STP" && parsed != "CMP")
+		if (parsed != "STP" && parsed != "CMP" && parsed != "INC" && parsed != "DEC")
 		{
 			string instrOperand = parse(line);
 			if (instrOperand.find("#") == string::npos) // absolute addressing (mem address)
@@ -411,7 +410,8 @@ string Assembler::parse(string* line)
 		}
 	}
 
-	throw AssemblerException("Opcode requiring operand with no operand");
+	//throw AssemblerException("Opcode requiring operand with no operand");
+	return "";
 }
 
 
@@ -419,17 +419,18 @@ string Assembler::parse(string* line)
 	to get a memory address do sTable.getAddress(label);
 */
 
-//int main(int argc, char** argv)
-int main()
+int main(int argc, char** argv)
+//int main()
 {
-	// if (argc != 2)
-	// {
-	// 	cerr << "error please enter filename as parameter" << endl;
-	// 	return -1;
-	// }
+	if (argc != 2)
+	{
+		cerr << "error please enter filename as parameter" << endl;
+		return -1;
+	}
 
 	 //Assembler assembler(argv[1]);
-	 Assembler assembler("test.txt");
+	 Assembler assembler(argv[1]);
+  
 	 assembler.assemble();
 	 return 0;
 	

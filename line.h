@@ -8,7 +8,7 @@ using namespace std;
 const static int SIZE = 32;
 //void printVector(vector<bool>*);
 
-const static unsigned int operandWidth = 5, opcodeWidth = 4; 
+const static unsigned int operandWidth = 6, opcodeWidth = 4; 
 void printVector(vector<bool> * v);
 int uBinToDec(vector<bool> *bin);
 int binToDec(vector<bool> * bin);
@@ -27,6 +27,8 @@ public:
 	vector<bool> * getVector();
 	void setOperand(vector<bool>*);
 	void setVector(vector<bool>*);
+
+	bool isImmAddressing();
 
 	int getDecInstruction();
 	int getDecOperand(); 

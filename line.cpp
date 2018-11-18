@@ -110,7 +110,7 @@ vector<bool> * Line::getVector(){
 }
 
 vector<bool> * Line::getInstruction() {
-	return new vector<bool>(line->begin() + 13, line->begin() + 16);
+	return new vector<bool>(line->begin() + 13, line->begin() + 13 + opcodeWidth);
 }
 
 vector<bool> * Line::getOperand() {
@@ -145,6 +145,9 @@ void Line::setDecVector(int decNumber){
 	setVector(decToBin(decNumber));
 }
 
+bool Line::isImmAddressing() {
+	return line->at(SIZE-1);
+}
 
 
 

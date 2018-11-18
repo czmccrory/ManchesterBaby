@@ -14,7 +14,7 @@ int binToDec(vector<bool> * bin)
   int length = bin->size();
   int decimal = 0;
 
-  for (int i = 0; i < length; i++)
+  for (int i = 0; i < length -1; i++)
   {
     if (bin->at(i) == 1) //add value of 2^(length - i - 1)(value of its position in the binary number)
     {

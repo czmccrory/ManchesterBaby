@@ -40,8 +40,11 @@ class ManchesterBaby
     ManchesterBaby(); //constructor
     void extHWare();
 
+
+    void menu();
+  
     // runs the program
-    void runBaby();
+    void runBaby(int);
 
     // Takes in a 32x32 machine code file and places it into the store
     void readFromFile(string);
@@ -73,15 +76,46 @@ class ManchesterBaby
 
       void cmp(); // increment CI if accumulator value <0 (if A < 0) { CI++ };
 
+
+      //void posldn(int); // load accumulator with positive form of store (A = S)
+      
+      void add(int); // add content of store location to accumulator (A = A + S)
+      
+      void negsto(int); // load store with negative contents of accumulator (S = -A)
+      
+      // void opsub(int); // subtract content of accumulator location from store (S = S - A)
+      
+      // void opmul(int); // multiplies content of accumulator location with store (S = S * A)
+      
+      // void opadd(int); // add content of accumulator location to store (S = S + A)
+
+      void cmp(); // increment CI if accumulator value <0 (if A < 0) { CI++ };
+
       void stp(); // stop (halt the program)
 
-      void mul(int); // multiplies content of store location with accumulator (A = A * S)
-      void posldn(int); // load accumulator with positive form of store (A = S)
-      void add(int); // add content of store location to accumulator (A = A + S)
-      void negsto(int); // load store with negative contents of accumulator (S = -A)
-      void opsub(int); // subtract content of accumulator location from store (S = S - A)
-      void opmul(int); // multiplies content of accumulator location with store (S = S * A)
-      void opadd(int); // add content of accumulator location to store (S = S + A)
+    // (immediate) executes the given instruction (see tabbed bit below)
+    void immediateEx(int,int);
+
+      // instruction set
+
+      void imjmp(int);
+
+      void imjrp(int); // add content of store location to CI (CI = CI + S)
+
+      void imldn(int); // load accumulator with negative form of store (A = -S)
+
+      void imsto(Line); // copy accumulator contents to store location (S = A)
+
+      void imsub(int); // subtract content of store location from accumulator (A = A - S)
+
+      void immul(int); // multiplies content of store location with accumulator (A = A * S)
+
+      void imposldn(int); // load accumulator with positive form of store (A = S)
+
+      void imadd(int); // add content of store location to accumulator (A = A + S)
+
+      void imnegsto(Line); // load store with negative contents of accumulator (S = -A)
+
 
     // prints the store
     void output();

@@ -105,21 +105,20 @@ Assembler::Assembler(string path)
 
 InstructionSet::InstructionSet()
 {
-	this -> size = 8;
+	this -> size = 11;
 
-	string mne[8] = { "JMP", "JRP", "LDN", "STO", "SUB", "SUB", "CMP", "STP"};
-	int num[8] = { 0, 1, 2, 3, 4, 5, 6, 7};
+	string mne[11] = { "JMP", "JRP", "LDN", "STO", "SUB", "SUB", "MUL", "ADD", "NEGSTO", "CMP", "STP" };
+	int num[11] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
-	vector<InstructionNode> temp(8); 
+	vector<InstructionNode> temp(11); 
 
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < 11; i++)
+    
 	{
 		temp.at(i) = InstructionNode(mne[i], num[i]);
 	}
 
 	this -> vec = temp;
-
-
 }
 
 bool InstructionSet::contains(string mne)

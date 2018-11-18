@@ -44,19 +44,20 @@ vector<bool>* decToBin(int dec, int numOfBits)
 {	
   vector<bool>* bin = new vector<bool>(numOfBits, 0); // vector to hold binary value (in this case size 8 for rule.)
 
-  const unsigned long long maxDec = pow(2,numOfBits)-1; //we are using operandWidth-bit numbers
+  //const unsigned long long maxDec = pow(2,numOfBits)-1; //we are using operandWidth-bit numbers
    //with the last bit as the sign
   bool negative;
   if (dec < 0) {
   	negative = true;
+	dec = 0 - dec;
   } else {
   	negative = false;
   }
-  for (size_t i=maxDec; dec>0; i--)
+  for (size_t i=numOfBits-1; dec>0; i--)
   {
     // take the remainder of the dec / 2 and save it to the vector
     // this value will always be 1 or 0
-    (*bin).at(maxDec-i) = dec%2;
+    (*bin).at(numOfBits-1-i) = dec%2;
     // update dec
     dec /= 2;
   }

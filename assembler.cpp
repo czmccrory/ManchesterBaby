@@ -1,4 +1,5 @@
 #include "assembler.h"
+#include "assemblerError.h"
 
 using namespace std;
 
@@ -10,6 +11,7 @@ void Assembler::assemble()
 }
 void Assembler::assembleFirstPass()
 {
+
 	ifstream ifs(filePath);
 	int counter = 0;
 	int* lineCounter = &counter;
@@ -17,17 +19,27 @@ void Assembler::assembleFirstPass()
 
 	if (! ifs)
 	{
-		cerr << "error: invalid filename" << endl;
-		return;
+		//cerr << "error: invalid filename" << endl;
+		//return;
+		throw AssemblerException("Invalid filename");
 	}
 
-	while (getline(ifs, line))
+	try
 	{
-		string lineCopy = line;
-		string* linePtr = &lineCopy;
-		cout << "assembling line: " << line << endl;
-	 	assembleLineFirstPass(linePtr, lineCounter);
+		while (getline(ifs, line))
+		{
+			string lineCopy = line;
+			string* linePtr = &lineCopy;
+			cout << "assembling line: " << line << endl;
+		 	assembleLineFirstPass(linePtr, lineCounter);
+		}
 	}
+	catch (AssemblerException &e)
+	{
+		cout << "Assembler Error:" << e.what() << endl;
+		exit (0);
+	}
+	
 
 	//flushBufferToFile();
 	//push to buffer file
@@ -67,8 +79,17 @@ void Assembler::assembleLineFirstPass(string* line, int* lineCounter)
 	{
 		int var;
 		stringstream ss;
-		ss << parse(line);
-		ss >> var;
+		try 
+		{
+			ss << parse(line);
+			ss >> var;
+		}
+		catch (AssemblerException &e)
+		{
+			cout << "Assembler Error: " << e.what() << endl;
+			exit(0);
+		}
+		
 		
 		cout << "Declare var" << endl;
 		bufferLine = declareVariable(var);
@@ -76,14 +97,26 @@ void Assembler::assembleLineFirstPass(string* line, int* lineCounter)
 		cout << "pushed to buffer: " << bufferLine << endl;
 		//buffer.push_back(bufferLine);
 		(*lineCounter)++;
-		cout << " past increment" << endl;
+		//cout << " past increment" << endl;
 
 	}
 	else if(iSet.contains(parsed))
 	{
 		cout << "encode Instruction" << endl;
 		cout << "parsed: " << parsed << endl;
-		bufferLine = encodeInstruction(parsed, parse(line));
+		if (parsed != "STP")
+		{
+			try 
+			{
+				bufferLine = encodeInstruction(parsed, parse(line));
+			}
+			catch (AssemblerException &e)
+			{
+				cout << "Assembler Error: " << e.what() << endl;
+				exit(0);
+			}
+		}
+		
 
 		cout << "pushed to buffer: " << bufferLine << endl;
 		//buffer.push_back(bufferLine);
@@ -91,7 +124,9 @@ void Assembler::assembleLineFirstPass(string* line, int* lineCounter)
 	}
 	else
 	{
-	 	cout << "do nothing/ assumes MNE/ something is wrong" << endl;
+		throw AssemblerException("Unidentified Opcode, this Opcode is not part of the instruction set");
+		exit(0);
+	 	//cout << "do nothing/ assumes MNE/ something is wrong" << endl;
 	 	 // do nothing/dont add to buffer
 	 }
 
@@ -182,7 +217,14 @@ void Assembler::assembleLineSecondPass(string* line, int* lineCounter, list<stri
 	{
 		cout << "encode Instruction" << endl;
 		cout << "parsed: " << parsed << endl;
-		bufferLine = encodeInstruction(parsed, parse(line));
+		if (parsed != "STP")
+		{
+			bufferLine = encodeInstruction(parsed, parse(line));
+		}
+		else 
+		{
+			bufferLine = encodeInstruction(parsed, "");
+		}
 
 		cout << "overwritten buffer: " << bufferLine << endl;
 		(*lineCounter) = (*lineCounter + 1);
@@ -249,16 +291,16 @@ string Assembler::encodeInstruction(string mne, string label)
 		tempLine += "0";
 	}
 
-	cout << "templines: " <<endl;
-	cout << tempLine << endl;
+	//cout << "templines: " <<endl;
+	//cout << tempLine << endl;
 	// 6 for 64x32 store
 	// 4 for 4 bit opcode (0-15)
 	tempLine.replace(0, 6, operand);
 
-	cout << tempLine << endl;
+	//cout << tempLine << endl;
 	tempLine.replace(13, 4, opcode);
-	cout <<tempLine << endl;
-	cout << "end of temp lines" << endl;
+	//cout <<tempLine << endl;
+	//cout << "end of temp lines" << endl;
 
 	return tempLine;
 
@@ -311,8 +353,9 @@ string Assembler::parse(string* line)
 			return parsed;
 
 		}
-
 	}
+
+	throw AssemblerException("Opcode requiring operand with no operand");
 }
 
 
@@ -320,15 +363,17 @@ string Assembler::parse(string* line)
 	to get a memory address do sTable.getAddress(label);
 */
 
-int main(int argc, char** argv)
+//int main(int argc, char** argv)
+int main()
 {
-	if (argc != 2)
-	{
-		cerr << "error please enter filename as parameter" << endl;
-		return -1;
-	}
+	// if (argc != 2)
+	// {
+	// 	cerr << "error please enter filename as parameter" << endl;
+	// 	return -1;
+	// }
 
-	 Assembler assembler(argv[1]);
+	 //Assembler assembler(argv[1]);
+	 Assembler assembler("test.txt");
 	 assembler.assemble();
 	 return 0;
 	

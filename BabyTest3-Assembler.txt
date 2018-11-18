@@ -4,7 +4,6 @@
 START:    LDP NUM01   ; Copy variable to accumulator
           ADD NUM02   ; Subtract variable from accumulator to get sum (negated)
           NEGSTO MYSUM   ; Store accumulator to variable - saves answer
-          JRP MYSUM   ; Add content of store to CI
 END:      STP         ; Stop processor
 ; Variable declarations follow
 NUM01:    VAR 4    ; Declare 32-bit variable

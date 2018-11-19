@@ -1,0 +1,56 @@
+Manchester Baby Group 4 Readme
+
+1. Running a program on the Baby
+
+To run a machine code file on the Manchester Baby there are two options:
+
+a) From command line: ./baby filename
+b) From a menu: ./baby  (A menu will show prompting you to enter a filename)
+
+2. Assembling a program using the Assembler:
+
+To assemble a file (assembly code -> machine code),
+simply call the following from command line: ./assembler filename 
+
+Please be aware of the following issue with the assembler: if the file contains tabs or doesn't have a space at the end of a line there may be an issue reading it.
+
+3. Modifications to the Baby:
+
+Our Manchester Baby has extended the capabilities of the original:
+
+a) It has two addressing modes: 
+	i) Absolute (like the original) represented in assembly by "OPCODE MEMORY_ADDRESS"
+	ii) Immediate represented in assembly by "OPCODE #VALUE"
+
+	Because of this we extended the operands to be 6-bits long to allow slightly larger values 		to be used with immediate addressing.
+
+
+b) It can be extended to store 64 32-bit lines in the Store (this can be done from a menu option)
+
+c) It has an extended instruction set:
+
+	This means opcodes are 4-bits instead of 3.
+	The extended ones are 0001 to 1011.
+	Every operation that takes an operand can also be used with the Immediate Addressing Mode.
+
+	 Instr	 Opcode
+	{ JMP	 0000 } Jump
+	{ JRP 	 1000 } Jump Relative
+	{ LDN 	 0100 } Load Negative
+	{ STO 	 1100 } Store
+	{ SUB 	 0010 } Subtract
+	{ SUB 	 1010 } Subtract
+	{ CMP 	 0110 } Compare
+	{ STP 	 1110 } Stop
+	{ MUL 	 0001 } Multiply
+	{ LDP 	 1001 } Load Positive
+	{ ADD 	 0101 } Add
+	{ NEGSTO 1101 }	Store Negative
+	{ INC	 0011 }	Increment
+	{ DEC	 1011 }	Deincrement
+
+
+
+
+
+

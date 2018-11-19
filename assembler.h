@@ -1,9 +1,13 @@
+#ifndef ASSEMBLER
+#define ASSEMBLER
+
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <sstream>
 #include <vector>
 #include <list>
+#include <stdexcept>
 
 using namespace std;
 
@@ -97,6 +101,15 @@ class Assembler
 };
 
 
+class AssemblerException : public std::exception
+{
+protected: 
+	std::string msg;
+
+public:
+	explicit AssemblerException(std::string message) : msg(message) {}
+	const char* what() const noexcept {return msg.c_str();}
+};
 
 Assembler::Assembler(string path)
 {
@@ -116,7 +129,6 @@ InstructionSet::InstructionSet()
 	vector<InstructionNode> temp(14); 
 
 	for (int i = 0; i < 14; i++)
-; i < size; i++)
 	{
 		temp.at(i) = InstructionNode(mne[i], num[i]);
 	}
@@ -255,7 +267,8 @@ string SymbolTable::getAddress(string label)
 		// return mem address 0 will be overwritten "later"
 		return "000000";
 	}
-
+	//Should never get here
+	return "000000";
 }
 
 // bool SymbolTable::isComplete()
@@ -305,11 +318,14 @@ string decToBinaryString(int dec, int length)
 		dec /= 2;
 	}
 
-	for (i; i > 0; i--)
+	while (i > 0)
 	{
 		bin += "0";
+		i--;
 	}
 		//cout << bin <<endl;
 		return bin;
 
 }
+
+#endif

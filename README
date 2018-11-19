@@ -63,7 +63,8 @@ c) It has an extended instruction set:
 	a) SubtractandCompare
 	b) MultiplyandSubtract
 	c) AddAndStoreNegative
-	d) Add34Times (to show >32-bit store)
+	d) AddAndStoreNegative-IA (Immediate Addressing)
+	e) Add34Times (to show >32-bit store)
 	
 
 

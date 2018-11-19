@@ -1,3 +1,11 @@
+/*
+  Group 4
+   Melvin Abraham    170013110
+   Kamila Gorska     170013107
+   Charlie Hewitt    170015454
+   Caoilainn McCrory 170001498
+   Frantisek Pavlica 170020274
+*/
 #ifndef _BABY_H_
 #define _BABY_H_
 

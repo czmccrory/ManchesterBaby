@@ -188,20 +188,22 @@ void ManchesterBaby::stp(){
 void ManchesterBaby::mul(int operand) {
 
 	presentMnemonic = "MUL " + to_string(operand);
-	int accumulatorDec = accumulator.getDecVector();
+	int accumulatorDec = accumulator.getDecVector(); 
 	int storeDec = store.at(operand).getDecVector();
+  //multiply the acumulator value with the value we got from the store
 	int result = accumulatorDec * storeDec;
 	accumulator.setDecVector(result);
 
 }
 
 /*
-  Multiplies accumulator and store
+  Multiplies accumulator and operand
 */
 void ManchesterBaby::immul(int operand) {
 
 	presentMnemonic = "IMMUL " + to_string(operand);
-	  int accumulatorDec = accumulator.getDecVector();
+	int accumulatorDec = accumulator.getDecVector();
+  //multiply the accumulator value and the operand
   int result = accumulatorDec * operand;
   accumulator.setDecVector(result);
 }
@@ -223,6 +225,7 @@ void ManchesterBaby::ldp(int operand){
 void ManchesterBaby::imldp(int operand){
 
 	presentMnemonic = "IMLDP " + to_string(operand);
+  //load the operand to the accumulator
   accumulator.setDecVector(operand);
 }
 
@@ -232,24 +235,23 @@ void ManchesterBaby::imldp(int operand){
 void ManchesterBaby::add(int operand) {
 	presentMnemonic = "ADD " + to_string(operand);
 
-  int accumulatorDec = accumulator.getDecVector();
+  int accumulatorDec = accumulator.getDecVector(); 
   int storeDec = store.at(operand).getDecVector(); 
-  int result = accumulatorDec + storeDec;
 
-  //accumulator.setOperand(decToBin(accumulatorDec));
+  int result = accumulatorDec + storeDec; //add the two values together
+
   accumulator.setDecVector(result);
 }
 
+//add the operand to the accumulator
 void ManchesterBaby::imadd(int operand) {
 
 	presentMnemonic = "IMADD " + to_string(operand);
 
-
   int accumulatorDec = accumulator.getDecVector();
+  int result = accumulatorDec + operand; //add the two values
 
-  int result = accumulatorDec + operand;
-
-  accumulator.setDecVector(result);
+  accumulator.setDecVector(result); //save it to the accumulator
 }
 
 /*
@@ -259,12 +261,14 @@ void ManchesterBaby::negsto(int operand) {
 
 	presentMnemonic = "NEGSTO " + to_string(operand);
   int accumulatorValue = accumulator.getDecVector();
+  //store the negative of the accumulator in the store
   store.at(operand).setDecVector(0-accumulatorValue);
 }
 
 
 /*
-  Set the store to the negative of the accumulator
+  Set the store to the negative of the operand
+  Doesn't really work because we can't get the address without an operand but shhh
 */
 void ManchesterBaby::imnegsto(Line value) {
 
@@ -290,15 +294,18 @@ void ManchesterBaby::extHWare() {
 
 
 
-
+//get the decimal instruction opcode from the present instruction
 int ManchesterBaby::decodeInstruction() {
 	return presentInstruction.getDecInstruction();
 }
 
+//get the decimal operand from the present instruction
 int ManchesterBaby::decodeOperand(){
 	return presentInstruction.getDecOperand();
 }
 
+//get the addressing mode from the present instruction
+//1 if immediate, 0 if absolute
 bool ManchesterBaby::decodeAddressingMode(){
 	return presentInstruction.isImmAddressing();
 }
@@ -381,7 +388,6 @@ void ManchesterBaby::execute(int opcode, int operand){
 void ManchesterBaby::immediateEx(int opcode, int operand){
   Line value = store.at(operand);
   clrscr();
-  //cout << "opcode " << opcode << ", operand " <<operand <<endl;
   //Process the opcode
   switch(opcode){
     case 0: 
@@ -443,22 +449,26 @@ void ManchesterBaby::immediateEx(int opcode, int operand){
   }
 }
 
+//execute the right opcode based on the addressing more
 void ManchesterBaby::addressedExecute(int opcode, int operand, bool immAddressing) {
 	if (immAddressing){
+    //if the addressing in the PI is immediate run this method
 		immediateEx(opcode, operand);
 	} else {
+    //if it's absolute run this other method
 		execute(opcode, operand);
 	}
 }
 
+//read a program from a file and save it to the store
 void ManchesterBaby::readFromFile(string path){
-  ifstream file (path);
-  if(file){
-    string l;
+  ifstream file (path); //open a file stream at path
+  if(file){ //if opened successfully
+    string l; 
     size_t i = 0;
-    while (getline(file, l)) {
-      Line myline(l);
-      store.at(i) = myline;
+    while (getline(file, l)) { //get a line to l
+      Line myline(l); //call the line string constructor for this line
+      store.at(i) = myline; //save this line to the store at i
       i++;
     }
   }
@@ -466,7 +476,7 @@ void ManchesterBaby::readFromFile(string path){
     cout << "Unable to open file" << endl;
   }
 
-  file.close();
+  file.close(); //close the file
 
 }
 
@@ -489,15 +499,16 @@ void ManchesterBaby::output() {
 
   cout <<""<<endl;
   cout<< "Present Instruction" << "\n\t";
-  presentInstruction.printNoEndl();
-  cout << '\t' << presentMnemonic << endl;
+  presentInstruction.printNoEndl();//print the mnemonic for the present instrcution
+  cout << '\t' << presentMnemonic << endl; 
+
 
   cout << "" <<endl;
   cout << "Control Instruction" <<"\n\t";
-  Line ci;
-  ci.setDecVector(instructionCounter);
+  Line ci; // create a new line
+  ci.setDecVector(instructionCounter);  //set the value at this line to the instruction counter
   ci.printNoEndl();
-  cout << '\t' <<  ci.getDecVector() <<endl;
+  cout << '\t' <<  ci.getDecVector() <<endl; //print the decimal value too
 
   cout << "" <<endl;
   cout << "Accumulator" <<"\n\t";
@@ -506,37 +517,40 @@ void ManchesterBaby::output() {
   cout << "\nPress enter to see the next cycle, or input any other key to exit." <<endl;
 
   if (!stopLamp){
-  	cout << "Stop Lamp: " << "\033[1;34mOFF\033[0m\n"<<endl;
+  	cout << "Stop Lamp: " << "\033[1;34mOFF\033[0m\n"<<endl; //blue OFF
   }else{
-  	cout << "Stop Lamp: " << "\033[1;31mON\033[0m\n"<<endl;
+  	cout << "Stop Lamp: " << "\033[1;31mON\033[0m\n"<<endl; //red ON
   }
 }
 
+//run the Manchester baby with its fetch-execute cycle
 void ManchesterBaby::runBaby(string filename) {
-	readFromFile(filename);
-  cin.ignore();
+	readFromFile(filename); //read the file
+  cin.ignore(); //clear the cin
   cin.clear();
 
-    int instruction;
-    char temp;
-    do {
-      incrementCI(); //increment program counter
-      fetch(); //get next line and save it to the PI
-      instruction = decodeInstruction(); //get the decimal opcode number
-      int operand = decodeOperand();
-  	  bool immAddressing = decodeAddressingMode();
-      addressedExecute(instruction, operand, immAddressing);
-      output(); //display the store, PI, CI, acucmulator
-      cin.get(temp);
-    } while (instruction != 7 && temp == '\n'); //run until the decoded opcode is halt/stop
+  int instruction;
+  char temp;
+  do {
+    incrementCI(); //increment program counter
+    fetch(); //get next line and save it to the PI
+    instruction = decodeInstruction(); //get the decimal opcode number
+    int operand = decodeOperand();
+	  bool immAddressing = decodeAddressingMode();
+    addressedExecute(instruction, operand, immAddressing);
+    output(); //display the store, PI, CI, acucmulator
+    cin.get(temp);
+  } while (instruction != 7 && temp == '\n'); //run until the decoded opcode is halt/stop
 
 }
 
+//run the baby if no filename was provided and get the file name from a menu
 void ManchesterBaby::runBaby() {
   string filename=getValidFile();
   runBaby(filename);
 }
 
+//get a valid filename
 string ManchesterBaby::getValidFile(){
   bool isValid=true;
   //Initalise the variable
@@ -551,11 +565,8 @@ string ManchesterBaby::getValidFile(){
   
   //Store the file name
   cin >> filename;
-   // Add the file extention to the filename
-  //filename += ".txt";
    //Initalise variable
   ifstream infile;
-   //filename=filename+".txt";
   //Open file
   infile.open(filename, ios::in);
    //Open the file to prove that it exists
@@ -583,11 +594,13 @@ string ManchesterBaby::getValidFile(){
  return filename;
 }
 
+//set the global paramfile variable to the string
 void ManchesterBaby::setParamFile(string filename) {
 	this->paramfile = filename;
 	hasParam = true;
 }
 
+//run the menu
 void ManchesterBaby::menu() {
   int choice;
   bool isValid;
@@ -599,10 +612,12 @@ void ManchesterBaby::menu() {
   cout << "3. Exit" <<endl;
   cin >> choice;
   if(choice == 1) {
-  	try {
+  	try { 
+      //if there is an error while running the baby catch it
+      //it will most likely be because there's not enough memory
 	  	if (hasParam) {
 	  		cout <<paramfile<<endl;
-	  		runBaby(paramfile);
+	  		runBaby(paramfile); //if a filename was provided run the baby with this file
 	  	} else {
 	    	runBaby();
 	  	}	
@@ -627,6 +642,7 @@ void ManchesterBaby::menu() {
 }
 
 
+//main method
 int main(int argc, char** argv) {
   ManchesterBaby mb;
   if(argc > 2) {

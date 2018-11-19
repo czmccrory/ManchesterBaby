@@ -1,5 +1,4 @@
 #include "assembler.h"
-#include "assemblerError.h"
 
 using namespace std;
 
@@ -20,8 +19,6 @@ void Assembler::assembleFirstPass()
 
 	if (! ifs)
 	{
-		//cerr << "error: invalid filename" << endl;
-		//return;
 		throw AssemblerException("Invalid filename");
 	}
 
@@ -54,11 +51,9 @@ void Assembler::assembleLineFirstPass(string* line, int* lineCounter)
 	string bufferLine;
 
 	string parsed = parse(line);
-	//cout << " parsed: " << parsed << endl;
 
 	if (parsed == "")
 	{
-		//cout << "-1" << endl;
 		return;
 	}
 
@@ -70,7 +65,6 @@ void Assembler::assembleLineFirstPass(string* line, int* lineCounter)
 
 		addVariableToSymbolTable(label, *lineCounter);
 
-		// i think this should be here
 		parsed = parse(line);
 
 	}
@@ -91,20 +85,14 @@ void Assembler::assembleLineFirstPass(string* line, int* lineCounter)
 			exit(0);
 		}
     
-		//cout << "Declare var" << endl;
 		bufferLine = declareVariable(var);
 		cout << "Machine Code: " << bufferLine << "\n" << endl;
 
-		//cout << "pushed to buffer: " << bufferLine << endl;
-		//buffer.push_back(bufferLine);
 		(*lineCounter)++;
-		//cout << " past increment" << endl;
 
 	}
 	else if(iSet.contains(parsed))
 	{
-		//cout << "encode Instruction" << endl;
-		//cout << "parsed: " << parsed << endl;
 		if (parsed != "STP" && parsed != "CMP" && parsed != "INC" && parsed != "DEC")
 		{
 			try 
@@ -123,17 +111,12 @@ void Assembler::assembleLineFirstPass(string* line, int* lineCounter)
 			}
 		}
 		
-
-		//cout << "pushed to buffer: " << bufferLine << endl;
-		//buffer.push_back(bufferLine);
 		(*lineCounter) = (*lineCounter + 1);
 	}
 	else
 	{
 		throw AssemblerException("Unidentified Opcode, this Opcode is not part of the instruction set");
 		exit(0);
-	 	//cout << "do nothing/ assumes MNE/ something is wrong" << endl;
-	 	 // do nothing/dont add to buffer
 	 }
 
 
@@ -153,7 +136,6 @@ void Assembler::assembleSecondPass()
 	int* lineCounter = &counter;
 	string line = "";
 	list<string>::iterator it = buffer.begin();
-	size_t size = buffer.size();
 	buffer = list<string>();
 
 	if (! ifs)
@@ -171,8 +153,6 @@ void Assembler::assembleSecondPass()
 	 	assembleLineSecondPass(linePtr, lineCounter, it);
 	}
 
-	//flushBufferToFile();
-	//push to buffer file
 } 
 
 
@@ -184,23 +164,19 @@ void Assembler::assembleLineSecondPass(string* line, int* lineCounter, list<stri
 	string bufferLine;
 
 	string parsed = parse(line);
-	//cout << " parsed: " << parsed << endl;
 
 	if (parsed == "")
 	{
-		//cout << "-1" << endl;
 		return;
 	}
 
 	// if theres a "LABEL": add it to symbol table along with current line number as address
 	if (parsed.find(":") != string::npos)
 	{
-		//cout << "Label found: " << parsed;
 		string label = parsed.substr(0, parsed.length()-1);
 
 		addVariableToSymbolTable(label, *lineCounter);
 
-		// i think this should be here
 		parsed = parse(line);
 
 	}
@@ -213,21 +189,15 @@ void Assembler::assembleLineSecondPass(string* line, int* lineCounter, list<stri
 		ss << parse(line);
 		ss >> var;
 		
-		//cout << "Declare var" << endl;
+
 		bufferLine = declareVariable(var);
 
-		//cout << "overwritten buffer: " << bufferLine << endl;
 		(*lineCounter)++;
 		it = buffer.insert(it, bufferLine);
 		cout << "Machine Code: " << *it << "\n" << endl;
-
-		//cout << " past increment" << endl;
-
 	}
 	else if(iSet.contains(parsed))
 	{
-		//cout << "encode Instruction" << endl;
-		//cout << "parsed: " << parsed << endl;
 		if (parsed != "STP" && parsed != "CMP" && parsed != "INC" && parsed != "DEC")
 		{
 			string instrOperand = parse(line);
@@ -253,7 +223,6 @@ void Assembler::assembleLineSecondPass(string* line, int* lineCounter, list<stri
 			bufferLine = encodeInstructionAddress(parsed, "");
 		}
 
-		//cout << "overwritten buffer: " << bufferLine << endl;
 		(*lineCounter) = (*lineCounter + 1);
 
 		it = buffer.insert(it, bufferLine);
@@ -262,7 +231,7 @@ void Assembler::assembleLineSecondPass(string* line, int* lineCounter, list<stri
  	}
  	else
  	{
- 		cout << "error possible says this twice" << endl;
+
  	}
 }
 
@@ -280,16 +249,11 @@ string Assembler::encodeInstructionValue(string mne, int value)
 	{
 		tempLine += "0";
 	}
-	//cout << "templines: " <<endl;
-	//cout << tempLine << endl;
 	// 6 for 64x32 store
 	// 4 for 4 bit opcode (0-15)
 	tempLine.replace(0, 6, operand);
-	//cout << tempLine << endl;
 	tempLine.replace(13, 4, opcode);
 	tempLine.replace(31,1, "1");
-	//cout <<tempLine << endl;
-	//cout << "end of temp lines" << endl;
 	return tempLine;
 }
 
@@ -322,8 +286,6 @@ string Assembler::getOpcode(string mne)
 	// convert to 4 bit binary string and return
 	string strOpcode = decToBinaryString(opCodeInt, 4);
 
-	//cout << "intOpCode: " << opCodeInt << " string: " << strOpcode << endl;
-
 	return strOpcode;
 }
 
@@ -332,12 +294,8 @@ string Assembler::encodeInstructionAddress(string mne, string label)
 	//get opcode (make it a binary string)
 	string opcode = getOpcode(mne);
 
-	//cout << "mne: " << mne << " -> opcode: " << opcode << endl;
-
 	//get memory address of operand
 	string operand = sTable.getAddress(label);
-
-	//cout << "operand: " << operand << endl;
 
 	//initialises templine to be 32 0s
 	string tempLine = "";
@@ -346,16 +304,11 @@ string Assembler::encodeInstructionAddress(string mne, string label)
 		tempLine += "0";
 	}
 
-	//cout << "templines: " <<endl;
-	//cout << tempLine << endl;
 	// 6 for 64x32 store
 	// 4 for 4 bit opcode (0-15)
 	tempLine.replace(0, 6, operand);
 
-	//cout << tempLine << endl;
 	tempLine.replace(13, 4, opcode);
-	//cout <<tempLine << endl;
-	//cout << "end of temp lines" << endl;
 
 	return tempLine;
 
@@ -386,7 +339,6 @@ string Assembler::parse(string* line)
 		size_t firstIndex = line->find_first_not_of(" ");
 		(*line) = line->substr(firstIndex, line->length() - firstIndex);
 
-		//cout << (*line) << endl;
 
 		// 2 cases being there is a space, word is end of line
 		if(line->find(" ") != string::npos)
@@ -397,7 +349,6 @@ string Assembler::parse(string* line)
 
 			(*line) = line->substr(whiteSpaceIndex, line->length() - whiteSpaceIndex);
 
-			//cout << "returning parsed: "  << parsed << endl;
 			return parsed;
 		}
 		else
@@ -409,8 +360,7 @@ string Assembler::parse(string* line)
 
 		}
 	}
-
-	//throw AssemblerException("Opcode requiring operand with no operand");
+	//throw (AssemblerException("bhkvvyv"));
 	return "";
 }
 

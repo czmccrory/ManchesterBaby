@@ -1,0 +1,44 @@
+; THIS PROGRAM ADDS TWO NUMBERS TOGETHER
+; The program starts at address 1, so we need to pad out address 0 
+          VAR 0       ; Declare 32-bit variable to fill space 
+START:    LDN NUM01   ; Copy variable to accumulator (negated)
+          ADD NUM02   ; Add variable from accumulator to get sum
+          ADD NUM01   ; Add variable from accumulator to get sum
+          ADD NUM02   ; Add variable from accumulator to get sum
+          ADD NUM01   ; Add variable from accumulator to get sum
+          ADD NUM02   ; Add variable from accumulator to get sum
+          ADD NUM01   ; Add variable from accumulator to get sum
+          ADD NUM02   ; Add variable from accumulator to get sum
+          ADD NUM01   ; Add variable from accumulator to get sum
+          ADD NUM02   ; Add variable from accumulator to get sum
+          ADD NUM01   ; Add variable from accumulator to get sum
+          ADD NUM02   ; Add variable from accumulator to get sum
+          ADD NUM01   ; Add variable from accumulator to get sum
+          ADD NUM02   ; Add variable from accumulator to get sum
+          ADD NUM01   ; Add variable from accumulator to get sum
+          ADD NUM02   ; Add variable from accumulator to get sum
+          ADD NUM01   ; Add variable from accumulator to get sum
+          ADD NUM02   ; Add variable from accumulator to get sum
+          ADD NUM01   ; Add variable from accumulator to get sum
+          ADD NUM02   ; Add variable from accumulator to get sum
+          ADD NUM01   ; Add variable from accumulator to get sum
+          ADD NUM02   ; Add variable from accumulator to get sum
+          ADD NUM01   ; Add variable from accumulator to get sum
+          ADD NUM02   ; Add variable from accumulator to get sum
+          ADD NUM01   ; Add variable from accumulator to get sum
+          ADD NUM02   ; Add variable from accumulator to get sum
+          ADD NUM01   ; Add variable from accumulator to get sum
+          ADD NUM02   ; Add variable from accumulator to get sum
+          ADD NUM01   ; Add variable from accumulator to get sum
+          ADD NUM02   ; Add variable from accumulator to get sum
+          ADD NUM01   ; Add variable from accumulator to get sum
+          ADD NUM02   ; Add variable from accumulator to get sum
+          ADD NUM01   ; Add variable from accumulator to get sum
+          ADD NUM02   ; Add variable from accumulator to get sum
+          ADD NUM01   ; Add variable from accumulator to get sum
+          STO MYSUM   ; Store accumulator to variable
+END:      STP         ; Stop processor
+; Variable declarations follow
+NUM01:    VAR 1    ; Declare 32-bit variable
+NUM02:    VAR 1    ; Declare 32-bit variable
+MYSUM:	  VAR 0	   ; Declare 32-bit variable

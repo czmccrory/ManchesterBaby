@@ -1,6 +1,13 @@
 Manchester Baby Group 4 Readme
 
-1. Running a program on the Baby
+Table of Contents
+	1. Running a program on the Baby
+	2. Assembling a program using the Assembler
+	3. Modifications to the Baby
+	4. Test files
+
+
+1. Running a program on the Baby:
 
 To run a machine code file on the Manchester Baby there are two options:
 
@@ -11,6 +18,8 @@ b) From a menu: ./baby  (A menu will show prompting you to enter a filename)
 
 To assemble a file (assembly code -> machine code),
 simply call the following from command line: ./assembler filename 
+
+The assembled machine code file will be a.filename
 
 Please be aware of the following issue with the assembler: if the file contains tabs or doesn't have a space at the end of a line there may be an issue reading it.
 
@@ -48,6 +57,15 @@ c) It has an extended instruction set:
 	{ NEGSTO 1101 }	Store Negative
 	{ INC	 0011 }	Increment
 	{ DEC	 1011 }	Deincrement
+
+4. Test files
+
+	a) SubtractandCompare
+	b) MultiplyandSubtract
+	c) AddAndStoreNegative
+	d) Add34Times (to show >32-bit store)
+	
+
 
 
 

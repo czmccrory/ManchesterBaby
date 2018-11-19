@@ -1,3 +1,13 @@
+
+/*
+  Group 4
+   Melvin Abraham    170013110
+   Kamila Gorska     170013107
+   Charlie Hewitt    170015454
+   Caoilainn McCrory 170001498
+   Frantisek Pavlica 170020274
+*/
+
 #ifndef ASSEMBLER
 #define ASSEMBLER
 
@@ -13,6 +23,7 @@ using namespace std;
 
 string decToBinaryString(int dec, int length);
 
+// Node to hold opcode + mnemonic
 class InstructionNode
 {
 	private:
@@ -26,6 +37,7 @@ class InstructionNode
 		int getNumber();
 };
 
+// Data structure that holds InstructionNodes
 class InstructionSet
 {
 	private:
@@ -33,12 +45,13 @@ class InstructionSet
 		int size;
 
 	public:
-		InstructionSet();
+		InstructionSet(); // initialises instruction set to manchester baby's "extended" one
 		int getOpcode(string mnemonic);
-		bool contains(string mnemonic);
+		bool contains(string mnemonic); // checks if instruction set contains given mne
 
 };
 
+// Node that contains { label, address }
 class SymbolNode
 {
 	private:
@@ -54,32 +67,33 @@ class SymbolNode
 
 };
 
+// Data structure that holds SymbolNodes, allows writing/access
 class SymbolTable
 {
 	private:
 		list<SymbolNode> table;
 
 	public:
-		SymbolTable();
+		SymbolTable(); // initialises empty symbol table
 		void addLabel(string label);
 		void addAddress(string label, string address);
-		bool contains(string label);
+		bool contains(string label); // check if label is already in table
 		string getAddress(string label);
 		void printTable();
-		//bool isComplete();
 };
 
 
+// Assembler, for a given filename
 class Assembler
 {
 	private: 
-		InstructionSet iSet;
-		list<string> buffer;
+		InstructionSet iSet; // instruction set
+		list<string> buffer; // output buffer
 		SymbolTable sTable;
 		string filePath;
 
 	public:
-		Assembler(string path);
+		Assembler(string path); 
 		void assemble();
 		void assembleFirstPass();
 		void assembleSecondPass();
@@ -270,22 +284,6 @@ string SymbolTable::getAddress(string label)
 	//Should never get here
 	return "000000";
 }
-
-// bool SymbolTable::isComplete()
-// {
-// 	list<SymbolNode>::iterator it;
-
-// 	for(it = table.begin(); it != table.end(); ++it)
-// 	{
-// 		if((*it).getAddress() == "000000")
-// 		{
-// 			//Return false if memory address remains at default
-// 			return false;
-// 		}
-// 	}
-
-// 	return true;
-// }
 
 SymbolTable::SymbolTable()
 {

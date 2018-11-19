@@ -1,17 +1,35 @@
+/*
+  Group 4
+   Melvin Abraham    170013110
+   Kamila Gorska     170013107
+   Charlie Hewitt    170015454
+   Caoilainn McCrory 170001498
+   Frantisek Pavlica 170020274
+*/
+
 #include "assembler.h"
 
 using namespace std;
 
+
+// Runs the assembler				
 void Assembler::assemble()
 {
-	assembleFirstPass();
-	assembleSecondPass();
-	flushBufferToFile();
+	try
+	{
+		assembleFirstPass();
+		assembleSecondPass();
+		flushBufferToFile();
+	}
+	catch(AssemblerException e)
+	{
+		cout << "\033[1;31mAssembler Error: \033[0m" << e.what() << endl;
+	}
 }
+
+// Runs the first pass of the assembler (completing symbol table)
 void Assembler::assembleFirstPass()
 {
-	cout << "FIRST PASS:" << endl;
-
 	ifstream ifs(filePath);
 	int counter = 0;
 	int* lineCounter = &counter;
@@ -22,9 +40,11 @@ void Assembler::assembleFirstPass()
 		throw AssemblerException("Invalid filename");
 	}
 
+	cout << "FIRST PASS:" << endl;
+
 	try
 	{
-		while (getline(ifs, line))
+		while (getline(ifs, line)) //while nextLine exists
 		{
 			string lineCopy = line;
 			string* linePtr = &lineCopy;
@@ -34,17 +54,13 @@ void Assembler::assembleFirstPass()
 	}
 	catch (AssemblerException &e)
 	{
-		cout << "Assembler Error:" << e.what() << endl;
+		cout << "\033[1;31mAssembler Error: \033[0m" << e.what() << endl;
 		exit (0);
 	}
-	
-
-	//flushBufferToFile();
-	//push to buffer file
 } 
 
 /* 	
-	Push to buffer means push_back()
+	First pass of a line (updating symbol table)
 */
 void Assembler::assembleLineFirstPass(string* line, int* lineCounter)
 {
@@ -52,7 +68,7 @@ void Assembler::assembleLineFirstPass(string* line, int* lineCounter)
 
 	string parsed = parse(line);
 
-	if (parsed == "")
+	if (parsed == "") // nothing useful left on line
 	{
 		return;
 	}
@@ -69,7 +85,7 @@ void Assembler::assembleLineFirstPass(string* line, int* lineCounter)
 
 	}
 
-	// if "VAR", declareVar(next word) and push to buffer
+	// if "VAR", declareVar(next word)
 	if (parsed == "VAR")
 	{
 		int var;
@@ -81,7 +97,7 @@ void Assembler::assembleLineFirstPass(string* line, int* lineCounter)
 		}
 		catch (AssemblerException &e)
 		{
-			cout << "Assembler Error: " << e.what() << endl;
+			cout << "\033[1;31mAssembler Error: \033[0m" << e.what() << endl;
 			exit(0);
 		}
     
@@ -91,9 +107,9 @@ void Assembler::assembleLineFirstPass(string* line, int* lineCounter)
 		(*lineCounter)++;
 
 	}
-	else if(iSet.contains(parsed))
+	else if(iSet.contains(parsed)) // recognised instruction
 	{
-		if (parsed != "STP" && parsed != "CMP" && parsed != "INC" && parsed != "DEC")
+		if (parsed != "STP" && parsed != "CMP" && parsed != "INC" && parsed != "DEC") // has an operand
 		{
 			try 
 			{
@@ -106,7 +122,7 @@ void Assembler::assembleLineFirstPass(string* line, int* lineCounter)
 			}
 			catch (AssemblerException &e)
 			{
-				cout << "Assembler Error: " << e.what() << endl;
+				cout << "\033[1;31mAssembler Error: \033[0m" << e.what() << endl;
 				exit(0);
 			}
 		}
@@ -117,16 +133,13 @@ void Assembler::assembleLineFirstPass(string* line, int* lineCounter)
 	{
 		throw AssemblerException("Unidentified Opcode, this Opcode is not part of the instruction set");
 		exit(0);
-	 }
-
-
-
-	
-
+	 }	
 }
 
+// second pass: fills up buffer with the machine code
 void Assembler::assembleSecondPass()
 {
+	// prints complete symbol table for reference
 	sTable.printTable();
 
 	cout << "\nSECOND PASS:" << endl;
@@ -136,7 +149,6 @@ void Assembler::assembleSecondPass()
 	int* lineCounter = &counter;
 	string line = "";
 	list<string>::iterator it = buffer.begin();
-	buffer = list<string>();
 
 	if (! ifs)
 	{
@@ -157,7 +169,7 @@ void Assembler::assembleSecondPass()
 
 
 /*
-	Push to buffer means overwrite ie iterate through the buffer
+	Adds a line of machine code to buffer if needed (line contains code)
 */
 void Assembler::assembleLineSecondPass(string* line, int* lineCounter, list<string>::iterator it)
 {
@@ -196,9 +208,9 @@ void Assembler::assembleLineSecondPass(string* line, int* lineCounter, list<stri
 		it = buffer.insert(it, bufferLine);
 		cout << "Machine Code: " << *it << "\n" << endl;
 	}
-	else if(iSet.contains(parsed))
+	else if(iSet.contains(parsed)) // recognised instruction
 	{
-		if (parsed != "STP" && parsed != "CMP" && parsed != "INC" && parsed != "DEC")
+		if (parsed != "STP" && parsed != "CMP" && parsed != "INC" && parsed != "DEC") // requires operand
 		{
 			string instrOperand = parse(line);
 			if (instrOperand.find("#") == string::npos) // absolute addressing (mem address)
@@ -218,7 +230,7 @@ void Assembler::assembleLineSecondPass(string* line, int* lineCounter, list<stri
 				bufferLine = encodeInstructionValue(parsed, value);
 			}
 		}
-		else 
+		else // blank operand
 		{
 			bufferLine = encodeInstructionAddress(parsed, "");
 		}
@@ -235,6 +247,7 @@ void Assembler::assembleLineSecondPass(string* line, int* lineCounter, list<stri
  	}
 }
 
+// encodes given opcode + #value for immediate addressing
 string Assembler::encodeInstructionValue(string mne, int value)
 {
 	//get opcode (make it a binary string)
@@ -257,6 +270,7 @@ string Assembler::encodeInstructionValue(string mne, int value)
 	return tempLine;
 }
 
+// declares variable
 string Assembler::declareVariable(int value)
 {
 	return decToBinaryString(value,32); // convert value to 32bit binary string and return it
@@ -266,7 +280,6 @@ string Assembler::declareVariable(int value)
 	NUM01: -> address is this line (check if label in table, if not add it) then add address
 	NUM01 -> label, so check in table add if not defined (sTable,addLabel(label);)
 */
-
 void Assembler::addVariableToSymbolTable(string label, int address)
 {
 	// add label (if not already defined)
@@ -278,6 +291,7 @@ void Assembler::addVariableToSymbolTable(string label, int address)
 	sTable.addAddress(label, strAddress);
 }
 
+// gets the opcode
 string Assembler::getOpcode(string mne)
 {
 	// getOpcode as int
@@ -289,6 +303,7 @@ string Assembler::getOpcode(string mne)
 	return strOpcode;
 }
 
+//encodes given opcode + address (operand) for absolute addressing
 string Assembler::encodeInstructionAddress(string mne, string label)
 {
 	//get opcode (make it a binary string)
@@ -314,6 +329,7 @@ string Assembler::encodeInstructionAddress(string mne, string label)
 
 }
 
+// returns the next useful bit of the line (string, no " ")
 string Assembler::parse(string* line)
 {
 	string parsed = "";
@@ -360,32 +376,28 @@ string Assembler::parse(string* line)
 
 		}
 	}
-	//throw (AssemblerException("bhkvvyv"));
+	throw (AssemblerException("Expected Operand"));
 	return "";
 }
 
 
-/*
-	to get a memory address do sTable.getAddress(label);
-*/
 
 int main(int argc, char** argv)
-//int main()
 {
 	if (argc != 2)
 	{
-		cerr << "error please enter filename as parameter" << endl;
+		cerr << "error please (only) enter a filename as parameter" << endl;
 		return -1;
 	}
 
-	 //Assembler assembler(argv[1]);
+	// initialises assembler with given filename and runs it
 	 Assembler assembler(argv[1]);
-  
 	 assembler.assemble();
+
 	 return 0;
 	
 }
-
+// // prints the buffer for debugging purposes
 // void Assembler::displayBuffer()
 // {
 // 	list<string>::iterator it;
@@ -396,6 +408,7 @@ int main(int argc, char** argv)
 // 	}
 // }
 
+// flushes contents of buffer to filePath in the assembler
 void Assembler::flushBufferToFile()
 {
 	ofstream ofs("a." + filePath);

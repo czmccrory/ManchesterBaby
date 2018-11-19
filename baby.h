@@ -37,7 +37,8 @@ class ManchesterBaby
 
     int storeSize = 32;
 
-    string presentMnemonic;
+    string presentMnemonic; //the decoded instruction is stored here to later be displayed next to the PI
+
     string paramfile;
     bool hasParam = false;
 

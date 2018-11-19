@@ -6,11 +6,13 @@
 
 using namespace std;
 
+//initiasise the manchester baby with a store of empty lines (32 by default)
 ManchesterBaby::ManchesterBaby() {
 	Line l;
 	store = Store(storeSize,l);
 }
 
+//increment the current instruction
 void ManchesterBaby::incrementCI() {
   instructionCounter++;
 }
@@ -79,11 +81,11 @@ void ManchesterBaby::ldn(int operand){
 }
 
 /*
-  Get a value from the store and make the negative of that value and store it in the accumulator
+  load the negative of the operand into the accumulator
 */
 void ManchesterBaby::imldn(int operand){
 	presentMnemonic = "IMLDN " + to_string(operand);
-  int negativeValue = -operand;
+  int negativeValue = -operand; 
   accumulator.setDecVector(negativeValue);
 }
 
@@ -96,7 +98,7 @@ void ManchesterBaby::sto(int operand){
 }
 
 /*
-  Set the store to the accumulator
+  Doesn't actually really do anything
 */
 void ManchesterBaby::imsto(Line value){
   //cout << "imSTO" << value.getDecOperand() << endl;
@@ -113,24 +115,24 @@ void ManchesterBaby::sub(int operand){
  
   //Get the accumulator value
   int accumulatorDec = accumulator.getDecVector();
-  //cout << accumulatorDec << endl;
 
   //Get the Store value
   int storeDec = store.at(operand).getDecVector(); 
-  //cout << storeDec << endl;
 
   int result = accumulatorDec- storeDec;
 
-  //cout << result << endl;
   accumulator.setDecVector(result);
 
 }
 
+//increment the accumulator by 1
 void ManchesterBaby::inc(){
 	presentMnemonic = "INC ";
 	int accumulatorDec = accumulator.getDecVector();
 	accumulator.setDecVector(++accumulatorDec);
 }
+
+//decrement the accumulator by 1
 void ManchesterBaby::dec(){
 
 	presentMnemonic = "DEC ";
@@ -139,7 +141,7 @@ void ManchesterBaby::dec(){
 }
 
 /*
-  Subtract the store from the accumulator
+  Subtract the operand from the accumulator
 */
 void ManchesterBaby::imsub(int operand){
 
@@ -159,10 +161,8 @@ void ManchesterBaby::imsub(int operand){
 void ManchesterBaby::cmp(){
 
 	presentMnemonic = "CMP ";
-  //cout << "CMP " << endl;
-  //vector <bool> *accumulatorPtr=accumulator.getOperand();
-  //int accumulatorValue= binToDec(accumulatorPtr);
   int accumulatorValue = accumulator.getDecVector();
+  //increment the CI if the
   if(accumulatorValue<0){
     incrementCI();
   }
@@ -175,8 +175,7 @@ void ManchesterBaby::stp(){
 
 	presentMnemonic = "STP ";
   stopLamp = true;
-  //cout << "STP " << endl;
- // exit(0);
+
 }
 
 
@@ -187,7 +186,6 @@ void ManchesterBaby::stp(){
   Multiplies accumulator and store
 */
 void ManchesterBaby::mul(int operand) {
-  //cout << "MUL" << operand << endl;
 
 	presentMnemonic = "MUL " + to_string(operand);
 	int accumulatorDec = accumulator.getDecVector();
@@ -201,7 +199,6 @@ void ManchesterBaby::mul(int operand) {
   Multiplies accumulator and store
 */
 void ManchesterBaby::immul(int operand) {
-  //cout << "IMMUL" << operand << endl;
 
 	presentMnemonic = "IMMUL " + to_string(operand);
 	  int accumulatorDec = accumulator.getDecVector();
@@ -270,7 +267,6 @@ void ManchesterBaby::negsto(int operand) {
   Set the store to the negative of the accumulator
 */
 void ManchesterBaby::imnegsto(Line value) {
-  //cout << "IMNEGSTO " << value.getDecOperand() << endl;
 
 	presentMnemonic = "IMNEGSTO " + to_string(value.getDecOperand());
 
@@ -316,7 +312,6 @@ bool ManchesterBaby::decodeAddressingMode(){
 */
 void ManchesterBaby::execute(int opcode, int operand){
 	clrscr();
-	//cout << "opcode " << opcode << ", operand " <<operand <<endl;
   //Process the opcode
   switch(opcode){
     case 0: 
@@ -464,7 +459,6 @@ void ManchesterBaby::readFromFile(string path){
     while (getline(file, l)) {
       Line myline(l);
       store.at(i) = myline;
-      //store.push_back(myline);
       i++;
     }
   }
@@ -483,9 +477,8 @@ void clrscr(){
 
 
 void ManchesterBaby::output() {
-  //cout<< "here we would output the hardware state" <<endl;
 
-	//clrscr();
+	clrscr();
   cout<< "Store:" <<endl;
   for (size_t i = 0; i < store.size(); ++i)
   {
@@ -531,14 +524,7 @@ void ManchesterBaby::runBaby(string filename) {
       fetch(); //get next line and save it to the PI
       instruction = decodeInstruction(); //get the decimal opcode number
       int operand = decodeOperand();
-	  bool immAddressing = decodeAddressingMode();
-      /*
-      if(choice == 1) {
-        execute(instruction, operand); //execute the instruction
-      } else {
-        immediateEx(instruction, operand); //execute the instruction
-      }
-      */
+  	  bool immAddressing = decodeAddressingMode();
       addressedExecute(instruction, operand, immAddressing);
       output(); //display the store, PI, CI, acucmulator
       cin.get(temp);
@@ -653,5 +639,5 @@ int main(int argc, char** argv) {
   } else {
  	mb.menu();
   }
-  return 0; //later return the output of mb.runBaby() (if there were errors)
+  return 0;
 }

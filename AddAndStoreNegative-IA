@@ -1,0 +1,9 @@
+; THIS PROGRAM ADDS TWO NUMBERS TOGETHER AND STORES NEGATIVE SUM
+; The program starts at address 1, so we need to pad out address 0 
+          VAR 0       ; Declare 32-bit variable to fill space 
+START:    LDP #4   ; Load number
+          ADD #12   ; Add number to get sum
+          NEGSTO MYSUM   ; Store accumulator to variable (negated) - saves answer
+END:      STP         ; Stop processor
+; Variable declarations follow
+MYSUM:    VAR 0    ; Declare 32-bit variables

@@ -1,0 +1,12 @@
+; THIS PROGRAM SUBTRACTS TWO NUMBERS, COMPARES SECOND NUMBER AND SETS CI TO SUM
+; The program starts at address 1, so we need to pad out address 0 
+          VAR 0       ; Declare 32-bit variable to fill space 
+START:    LDN NUM02   ; Load variable from accumulator (negated)
+          SUB NUM01   ; Subtract variable from accumulator to get sum (negated)
+          CMP NUM02   ; Increment CI if Accumulator is negative (or do nothing)
+          JMP MYSUM   ; Set CI to content of Store
+END:      STP         ; Stop processor
+; Variable declarations follow
+NUM01:    VAR 513    ; Declare 32-bit variable
+NUM02:    VAR 254    ; Declare 32-bit variable
+MYSUM:    VAR 12      ; Declare 32-bit variable
